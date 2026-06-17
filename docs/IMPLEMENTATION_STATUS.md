@@ -34,6 +34,11 @@ Branch: `implement-approved-plan`
 - Debt receipts connected to DebtService
 - Payment receipts connected to PaymentService
 - Customer profile linked to receipt history
+- Evidence Vault service
+- Evidence Vault screen
+- Evidence note/WhatsApp/SMS/document/photo entry form
+- Evidence quality score
+- Customer profile linked to Evidence Vault
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -59,8 +64,7 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Evidence Vault
-2. SaaS Owner Panel
+1. SaaS Owner Panel
 ```
 
 ## Test commands
