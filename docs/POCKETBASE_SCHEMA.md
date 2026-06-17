@@ -21,6 +21,7 @@ approvals
 receipts
 customer_scores
 smart_locks
+lock_history
 evidence_files
 dispute_cases
 subscription_plans
@@ -120,6 +121,34 @@ status: select(pending, approved, rejected, cancelled)
 manager_note: text
 resolved_by: relation -> users
 resolved_at: date
+created_at: date
+```
+
+## smart_locks
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+active: bool
+risk_level: text
+reason: text
+locked_by: relation -> users
+lock_source: text
+created_at: date
+unlocked_by: relation -> users
+unlocked_at: date
+unlock_reason: text
+```
+
+## lock_history
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+lock_id: relation -> smart_locks
+action: select(locked, unlock_requested, unlocked, rejected)
+reason: text
+actor_user_id: relation -> users
 created_at: date
 ```
 
