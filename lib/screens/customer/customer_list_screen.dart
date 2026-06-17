@@ -126,15 +126,19 @@ class _CustomerCard extends StatelessWidget {
   final CustomerOption customer;
   final VoidCallback onTap;
 
+  String _initial(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return '?';
+    return String.fromCharCode(trimmed.runes.first);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         onTap: onTap,
-        leading: CircleAvatar(
-          child: Text(customer.name.isEmpty ? '?' : customer.name.characters.first),
-        ),
+        leading: CircleAvatar(child: Text(_initial(customer.name))),
         title: Text(customer.name),
         subtitle: Text('قەرزی ئێستا: ${customer.currentBalance.toStringAsFixed(0)} — سنوور: ${customer.creditLimit.toStringAsFixed(0)}'),
         trailing: const Icon(Icons.chevron_left),
