@@ -152,7 +152,8 @@ class _ScoreBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safeValue = value.clamp(0, 100);
+    final safeValue = value.clamp(0, 100).toDouble();
+    final safeValueText = safeValue.toStringAsFixed(0);
     return Container(
       width: 190,
       padding: const EdgeInsets.all(14),
@@ -167,7 +168,7 @@ class _ScoreBox extends StatelessWidget {
           Text(title, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 8),
           Text(
-            '$safeValue/100',
+            '$safeValueText/100',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: color,
