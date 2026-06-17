@@ -44,6 +44,11 @@ Branch: `implement-approved-plan`
 - Owner-only dashboard entry for system_owner role
 - Markets, licenses, support tickets, plans, and feature flags overview
 - Owner panel avoids reading private debt/payment/customer records
+- PocketBase setup guide
+- PocketBase schema collections JSON baseline
+- Schema Health service
+- Schema Health screen
+- Owner Panel linked to Schema Health
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -69,11 +74,10 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. PocketBase migration/export files
-2. Role and permission hardening
-3. Flutter analyze and compile fixes
-4. PDF Kurdish font embedding
-5. Production QA pass
+1. Role and permission hardening
+2. Flutter analyze and compile fixes
+3. PDF Kurdish font embedding
+4. Production QA pass
 ```
 
 ## Test commands
