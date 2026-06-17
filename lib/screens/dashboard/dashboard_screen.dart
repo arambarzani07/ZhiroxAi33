@@ -6,6 +6,7 @@ import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
+import '../approval/approval_center_screen.dart';
 import '../debt/add_debt_screen.dart';
 import '../payment/receive_payment_screen.dart';
 
@@ -44,6 +45,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()),
     );
     if (created == true && mounted) {
+      setState(_reloadStats);
+    }
+  }
+
+  Future<void> _openApprovalCenter() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ApprovalCenterScreen()),
+    );
+    if (mounted) {
       setState(_reloadStats);
     }
   }
@@ -123,6 +133,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             onPressed: _openReceivePayment,
                             icon: const Icon(Icons.payments),
                             label: const Text('پارەدانەوە'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _openApprovalCenter,
+                            icon: const Icon(Icons.verified_user),
+                            label: const Text('پەسندکردن'),
                           ),
                         ],
                       ),
