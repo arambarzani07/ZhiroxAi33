@@ -90,6 +90,22 @@ created_by: relation -> users
 created_at: date
 ```
 
+## evidence_files
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+related_entity_type: select(customer, debt, payment, receipt, dispute)
+related_entity_id: text
+evidence_type: select(note, whatsapp, sms, document, photo)
+title: text
+note: editor/file-safe text
+file: file optional
+quality_score: number
+created_by: relation -> users
+created_at: date
+```
+
 ## audit_logs
 
 ```text
