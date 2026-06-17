@@ -173,7 +173,8 @@ class _EvidenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final score = item.qualityScore.clamp(0, 100);
+    final score = item.qualityScore.clamp(0, 100).toDouble();
+    final scoreText = score.toStringAsFixed(0);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -193,7 +194,7 @@ class _EvidenceCard extends StatelessWidget {
             Text('کات: $dateText'),
             Text('پەیوەست بە: ${item.relatedEntityType} / ${item.relatedEntityId}'),
             const SizedBox(height: 10),
-            Text('Evidence Quality: $score/100'),
+            Text('Evidence Quality: $scoreText/100'),
             LinearProgressIndicator(value: score / 100),
           ],
         ),
