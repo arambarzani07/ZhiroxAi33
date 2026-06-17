@@ -5,79 +5,58 @@ Branch: `implement-approved-plan`
 ## Implemented foundation
 
 - Flutter project manifest
-- App entrypoint
 - Kurdish Sorani RTL app shell
-- Light/dark theme
 - Responsive mobile/tablet/web foundation
 - PocketBase client
 - Auth service using `users` collection
 - App state provider
 - Dashboard using real PocketBase data
 - Login screen
-- Dashboard action buttons
-- Customer lookup service
-- Customer list screen
-- Customer profile screen
+- Customer lookup/list/profile
 - Customer ledger timeline
 - Customer Debt Passport foundation
 - Customer risk/trust score UI
-- Customer score query service with safe fallback
 - Smart Lock UI
-- Smart Lock query service
-- Lock history preview
 - Unlock request flow to Approval Center
 - Add Debt Smart Lock protection
 - Receipt creation service
 - Receipt history screen
 - Receipt QR verification UI
 - Receipt PDF foundation service
-- Debt receipts connected to DebtService
-- Payment receipts connected to PaymentService
-- Customer profile linked to receipt history
-- Evidence Vault service
-- Evidence Vault screen
-- Evidence note/WhatsApp/SMS/document/photo entry form
-- Evidence quality score
-- Customer profile linked to Evidence Vault
+- Evidence Vault service and screen
 - SaaS Owner service
 - SaaS Owner Panel screen
-- Owner-only dashboard entry for system_owner role
-- Markets, licenses, support tickets, plans, and feature flags overview
-- Owner panel avoids reading private debt/payment/customer records
+- Owner Panel linked to Schema Health
 - PocketBase setup guide
 - PocketBase schema collections JSON baseline
-- Schema Health service
-- Schema Health screen
-- Owner Panel linked to Schema Health
-- Open debt lookup service
+- Schema Health service and screen
+- Role permission helper
+- Access denied view
+- Dashboard action visibility by role
+- Owner Panel direct role guard
+- Schema Health direct role guard
+- Role permission matrix documentation
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
 - Approval Center UI
-- Approval query/update service
 - Audit Log UI
-- Audit query service
 - Audit service
 - Immutable ledger service
-- Ledger query service
 - Approval service
 - Risk service
-- Debt service connected to ledger + audit
-- Payment service connected to ledger + audit
+- Debt service connected to ledger + audit + receipt
+- Payment service connected to ledger + audit + receipt
 - PocketBase schema baseline documentation
 - Flutter web `web/` files
 - Netlify build configuration
 
-## Important rule
-
-This is the first production foundation of the approved plan. The full system must continue module by module without deleting working code.
-
 ## Next modules
 
 ```text
-1. Role and permission hardening
-2. Flutter analyze and compile fixes
-3. PDF Kurdish font embedding
-4. Production QA pass
+1. Flutter analyze and compile fixes
+2. PDF Kurdish font embedding
+3. Production QA pass
+4. PocketBase API rules setup
 ```
 
 ## Test commands
