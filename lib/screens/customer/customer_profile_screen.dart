@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../services/customer_service.dart';
 import '../../services/ledger_query_service.dart';
+import 'customer_risk_panel.dart';
 
 class CustomerProfileScreen extends StatefulWidget {
   const CustomerProfileScreen({
@@ -113,6 +114,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _CustomerHeader(customer: customer),
+                      const SizedBox(height: 20),
+                      CustomerRiskPanel(
+                        customer: customer,
+                        marketId: widget.marketId,
+                      ),
                       const SizedBox(height: 20),
                       Text(
                         'Ledger Timeline',
