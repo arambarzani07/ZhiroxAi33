@@ -8,6 +8,7 @@ import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
 import '../approval/approval_center_screen.dart';
 import '../audit/audit_log_screen.dart';
+import '../customer/customer_list_screen.dart';
 import '../debt/add_debt_screen.dart';
 import '../payment/receive_payment_screen.dart';
 
@@ -62,6 +63,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _openAuditLog() async {
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const AuditLogScreen()),
+    );
+    if (mounted) {
+      setState(_reloadStats);
+    }
+  }
+
+  Future<void> _openCustomers() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CustomerListScreen()),
     );
     if (mounted) {
       setState(_reloadStats);
@@ -143,6 +153,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             onPressed: _openReceivePayment,
                             icon: const Icon(Icons.payments),
                             label: const Text('پارەدانەوە'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _openCustomers,
+                            icon: const Icon(Icons.people),
+                            label: const Text('کڕیارەکان'),
                           ),
                           OutlinedButton.icon(
                             onPressed: _openApprovalCenter,
