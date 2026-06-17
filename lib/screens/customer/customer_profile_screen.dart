@@ -158,15 +158,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                         onEvidence: _openEvidenceVault,
                       ),
                       const SizedBox(height: 20),
-                      CustomerRiskPanel(
-                        customer: customer,
-                        marketId: widget.marketId,
-                      ),
+                      CustomerRiskPanel(customer: customer, marketId: widget.marketId),
                       const SizedBox(height: 20),
-                      SmartLockPanel(
-                        customer: customer,
-                        marketId: widget.marketId,
-                      ),
+                      SmartLockPanel(customer: customer, marketId: widget.marketId),
                       const SizedBox(height: 20),
                       Text(
                         'Ledger Timeline',
@@ -211,6 +205,12 @@ class _CustomerHeader extends StatelessWidget {
   final VoidCallback onReceipts;
   final VoidCallback onEvidence;
 
+  String _initial(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return '?';
+    return String.fromCharCode(trimmed.runes.first);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -223,7 +223,7 @@ class _CustomerHeader extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  child: Text(customer.name.isEmpty ? '?' : customer.name.characters.first),
+                  child: Text(_initial(customer.name)),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
