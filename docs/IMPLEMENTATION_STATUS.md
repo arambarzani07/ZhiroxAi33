@@ -20,6 +20,8 @@ Branch: `implement-approved-plan`
 - Customer profile screen
 - Customer ledger timeline
 - Customer Debt Passport foundation
+- Customer risk/trust score UI
+- Customer score query service with safe fallback
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -45,11 +47,10 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Customer risk/trust score UI
-2. Smart Lock UI
-3. Receipt/PDF/QR module
-4. Evidence Vault
-5. SaaS Owner Panel
+1. Smart Lock UI
+2. Receipt/PDF/QR module
+3. Evidence Vault
+4. SaaS Owner Panel
 ```
 
 ## Test commands
