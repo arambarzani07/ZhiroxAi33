@@ -13,6 +13,12 @@ Branch: `implement-approved-plan`
 - Auth service using `users` collection
 - App state provider
 - Dashboard using real PocketBase data
+- Login screen
+- Dashboard action buttons
+- Customer lookup service
+- Open debt lookup service
+- Add debt screen wired to DebtService
+- Receive payment screen wired to PaymentService
 - Audit service
 - Immutable ledger service
 - Approval service
@@ -30,16 +36,14 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Customer screens and customer profile ledger timeline
-2. Add debt screen wired to DebtService
-3. Receive payment screen wired to PaymentService
-4. Approval Center UI
-5. Audit Log UI
-6. Customer risk/trust score UI
-7. Smart Lock UI
-8. Receipt/PDF/QR module
-9. Evidence Vault
-10. SaaS Owner Panel
+1. Approval Center UI
+2. Audit Log UI
+3. Customer screens and customer profile ledger timeline
+4. Customer risk/trust score UI
+5. Smart Lock UI
+6. Receipt/PDF/QR module
+7. Evidence Vault
+8. SaaS Owner Panel
 ```
 
 ## Test commands
