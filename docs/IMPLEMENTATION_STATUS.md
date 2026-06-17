@@ -39,6 +39,11 @@ Branch: `implement-approved-plan`
 - Evidence note/WhatsApp/SMS/document/photo entry form
 - Evidence quality score
 - Customer profile linked to Evidence Vault
+- SaaS Owner service
+- SaaS Owner Panel screen
+- Owner-only dashboard entry for system_owner role
+- Markets, licenses, support tickets, plans, and feature flags overview
+- Owner panel avoids reading private debt/payment/customer records
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -64,7 +69,11 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. SaaS Owner Panel
+1. PocketBase migration/export files
+2. Role and permission hardening
+3. Flutter analyze and compile fixes
+4. PDF Kurdish font embedding
+5. Production QA pass
 ```
 
 ## Test commands
