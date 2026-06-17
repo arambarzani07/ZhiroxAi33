@@ -31,21 +31,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _reloadStats() {
-    final marketId = context.read<AppStateProvider>().marketId;
-    _statsFuture = DashboardService().loadStats(marketId: marketId);
+    final appState = context.read<AppStateProvider>();
+    if (!AppPermissions.canUseMarketWorkspace(appState.role)) {
+      _statsFuture = Future.value(DashboardStats.empty());
+      return;
+    }
+    _statsFuture = DashboardService().loadStats(marketId: appState.marketId);
   }
 
   Future<void> _openAddDebt() async {
-    final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const AddDebtScreen()),
-    );
+    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const AddDebtScreen()));
     if (created == true && mounted) setState(_reloadStats);
   }
 
   Future<void> _openReceivePayment() async {
-    final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()),
-    );
+    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()));
     if (created == true && mounted) setState(_reloadStats);
   }
 
@@ -99,25 +99,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       floatingActionButton: canCreateDebt
-          ? FloatingActionButton.extended(
-              onPressed: _openAddDebt,
-              icon: const Icon(Icons.add),
-              label: const Text('قەرزی نوێ'),
-            )
+          ? FloatingActionButton.extended(onPressed: _openAddDebt, icon: const Icon(Icons.add), label: const Text('قەرزی نوێ'))
           : null,
       body: FutureBuilder<DashboardStats>(
         future: _statsFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text('هەڵە لە خوێندنەوەی داتای ڕاستەقینە: ${snapshot.error}'),
-              ),
-            );
+          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+          if (snapshot.hasError && canMarket) {
+            return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('هەڵە: ${snapshot.error}')));
           }
 
           final stats = snapshot.data ?? DashboardStats.empty();
@@ -142,13 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              canOwner
-                                  ? 'داتای مارکێتەکان بە شێوەی aggregate/operational دەبینرێت، نەک قەرز و کڕیاری تایبەتی.'
-                                  : canMarket
-                                      ? 'هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.'
-                                      : 'بەشی تایبەت بە role ـی ئێستات سنووردارکراوە.',
-                            ),
+                            Text(canOwner ? 'بۆ بەڕێوەبردنی SaaS بچۆ Owner Panel.' : 'هەموو ژمارەکان لە PocketBase دەخوێندرێنەوە.'),
                           ],
                         ),
                       ),
@@ -156,42 +139,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         spacing: 10,
                         runSpacing: 10,
                         children: [
-                          if (canOwner)
-                            FilledButton.icon(
-                              onPressed: _openOwnerPanel,
-                              icon: const Icon(Icons.admin_panel_settings),
-                              label: const Text('Owner Panel'),
-                            ),
-                          if (canCreateDebt)
-                            FilledButton.icon(
-                              onPressed: _openAddDebt,
-                              icon: const Icon(Icons.add),
-                              label: const Text('قەرزی نوێ'),
-                            ),
-                          if (canReceivePayment)
-                            FilledButton.icon(
-                              onPressed: _openReceivePayment,
-                              icon: const Icon(Icons.payments),
-                              label: const Text('پارەدانەوە'),
-                            ),
-                          if (canViewCustomers)
-                            OutlinedButton.icon(
-                              onPressed: _openCustomers,
-                              icon: const Icon(Icons.people),
-                              label: const Text('کڕیارەکان'),
-                            ),
-                          if (canApproval)
-                            OutlinedButton.icon(
-                              onPressed: _openApprovalCenter,
-                              icon: const Icon(Icons.verified_user),
-                              label: const Text('پەسندکردن'),
-                            ),
-                          if (canAudit)
-                            OutlinedButton.icon(
-                              onPressed: _openAuditLog,
-                              icon: const Icon(Icons.history),
-                              label: const Text('مێژووی کردار'),
-                            ),
+                          if (canOwner) FilledButton.icon(onPressed: _openOwnerPanel, icon: const Icon(Icons.admin_panel_settings), label: const Text('Owner Panel')),
+                          if (canCreateDebt) FilledButton.icon(onPressed: _openAddDebt, icon: const Icon(Icons.add), label: const Text('قەرزی نوێ')),
+                          if (canReceivePayment) FilledButton.icon(onPressed: _openReceivePayment, icon: const Icon(Icons.payments), label: const Text('پارەدانەوە')),
+                          if (canViewCustomers) OutlinedButton.icon(onPressed: _openCustomers, icon: const Icon(Icons.people), label: const Text('کڕیارەکان')),
+                          if (canApproval) OutlinedButton.icon(onPressed: _openApprovalCenter, icon: const Icon(Icons.verified_user), label: const Text('پەسندکردن')),
+                          if (canAudit) OutlinedButton.icon(onPressed: _openAuditLog, icon: const Icon(Icons.history), label: const Text('مێژووی کردار')),
                         ],
                       ),
                     ],
@@ -223,12 +176,7 @@ class _RoleNoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Text('ئەم dashboard ـە بەپێی role سنووردارکراوە. System owner لە Owner Panel کار دەکات؛ customer تەنها portal ـی خۆی دەبینێت.'),
-      ),
-    );
+    return const Card(child: Padding(padding: EdgeInsets.all(24), child: Text('بەشی ئێستات بەپێی role سنووردارکراوە.')));
   }
 }
 
@@ -252,10 +200,7 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: 14),
             Text(title, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
+            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           ],
         ),
       ),
