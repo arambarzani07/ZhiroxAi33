@@ -19,6 +19,8 @@ Branch: `implement-approved-plan`
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
+- Approval Center UI
+- Approval query/update service
 - Audit service
 - Immutable ledger service
 - Approval service
@@ -36,14 +38,13 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Approval Center UI
-2. Audit Log UI
-3. Customer screens and customer profile ledger timeline
-4. Customer risk/trust score UI
-5. Smart Lock UI
-6. Receipt/PDF/QR module
-7. Evidence Vault
-8. SaaS Owner Panel
+1. Audit Log UI
+2. Customer screens and customer profile ledger timeline
+3. Customer risk/trust score UI
+4. Smart Lock UI
+5. Receipt/PDF/QR module
+6. Evidence Vault
+7. SaaS Owner Panel
 ```
 
 ## Test commands
