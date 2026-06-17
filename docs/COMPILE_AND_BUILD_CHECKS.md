@@ -1,6 +1,6 @@
 # Compile and Build Checks
 
-This project now includes a GitHub Actions workflow for Flutter analysis and web build.
+This project includes a GitHub Actions workflow for Flutter analysis and web build.
 
 ## Workflow
 
@@ -11,18 +11,25 @@ This project now includes a GitHub Actions workflow for Flutter analysis and web
 ## What it runs
 
 ```bash
+flutter doctor -v
 flutter pub get
-flutter analyze
-flutter build web --release --dart-define=POCKETBASE_URL=${{ secrets.POCKETBASE_URL }}
+flutter analyze --no-fatal-infos
+flutter build web --release --dart-define=POCKETBASE_URL=<secret-or-fallback-url>
 ```
 
-## Required GitHub secret
+## Manual run
+
+The workflow supports manual execution through GitHub Actions because `workflow_dispatch` is enabled.
+
+## Recommended GitHub secret
 
 Add this repository secret before production builds:
 
 ```text
 POCKETBASE_URL=https://your-pocketbase-url
 ```
+
+If the secret is missing, the workflow falls back to the current Railway PocketBase URL so the compile check can still run.
 
 ## Local test commands
 
@@ -41,6 +48,8 @@ Schema Health is owner-only.
 Owner Panel is owner-only.
 Role permission helper centralizes frontend rules.
 Access Denied screen protects direct navigation.
+Risk score progress value is typed as double.
+Evidence quality progress value is typed as double.
 ```
 
 ## Remaining expected compile/build work
