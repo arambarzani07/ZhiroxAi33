@@ -27,6 +27,7 @@ dispute_cases
 subscription_plans
 licenses
 support_tickets
+feature_flags
 ```
 
 ## users field additions
@@ -40,6 +41,66 @@ approved: bool
 customer_code: text
 portal_enabled: bool
 last_login_at: date
+```
+
+## markets
+
+```text
+name: text
+market_name: text optional
+owner_name: text
+owner_user_id: relation -> users
+status: select(active, trial, expired, suspended, disabled)
+created_at: date
+```
+
+## subscription_plans
+
+```text
+name: text
+price_iqd: number
+price_usd: number
+billing_cycle: select(monthly, quarterly, yearly, custom)
+features: json
+active: bool
+created_at: date
+```
+
+## licenses
+
+```text
+market_id: relation -> markets
+plan_id: relation -> subscription_plans
+plan_name: text
+status: select(active, trial, expired, suspended, cancelled)
+starts_at: date
+ends_at: date
+max_users: number
+max_customers: number
+created_at: date
+```
+
+## feature_flags
+
+```text
+key: text
+name: text
+description: text
+enabled: bool
+plan_required: text
+created_at: date
+```
+
+## support_tickets
+
+```text
+market_id: relation -> markets
+created_by: relation -> users
+title: text
+message: editor/file-safe text
+priority: select(low, normal, high, urgent)
+status: select(open, waiting, resolved, closed)
+created_at: date
 ```
 
 ## debts field additions
@@ -188,7 +249,7 @@ created_at: date
 
 ## Access rule principle
 
-- System owner may manage markets/licenses/support but must not read private debt/payment/customer records.
+- System owner may manage markets/licenses/support/feature flags but must not read private debt/payment/customer records.
 - Market manager can read/write records for own `market_id`.
 - Employee can create allowed debt/payment records for own `market_id`.
 - Customer can read only own portal records.
