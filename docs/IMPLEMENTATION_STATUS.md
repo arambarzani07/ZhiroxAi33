@@ -38,6 +38,9 @@ Branch: `implement-approved-plan`
 - Role permission matrix documentation
 - Dashboard avoids debt/payment/customer queries for non-market roles
 - GitHub Actions Flutter web check workflow
+- GitHub Actions manual workflow dispatch
+- Flutter doctor step added to CI
+- CI PocketBase URL fallback added
 - Compile and build check guide
 - Risk score progress type fixed for compile safety
 - Evidence quality progress type fixed for compile safety
@@ -58,7 +61,7 @@ Branch: `implement-approved-plan`
 ## Next modules
 
 ```text
-1. Read GitHub Actions logs and fix reported compile issues
+1. Run GitHub Actions manually and inspect logs
 2. PDF Kurdish font embedding
 3. Production QA pass
 4. PocketBase API rules setup
