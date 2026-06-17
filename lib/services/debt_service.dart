@@ -2,6 +2,7 @@ import '../core/enums/ledger_entry_type.dart';
 import 'audit_service.dart';
 import 'ledger_service.dart';
 import 'pb_client.dart';
+import 'receipt_service.dart';
 import 'risk_service.dart';
 
 class DebtService {
@@ -9,13 +10,16 @@ class DebtService {
     AuditService? auditService,
     LedgerService? ledgerService,
     RiskService? riskService,
+    ReceiptService? receiptService,
   })  : _auditService = auditService ?? AuditService(),
         _ledgerService = ledgerService ?? LedgerService(),
-        _riskService = riskService ?? RiskService();
+        _riskService = riskService ?? RiskService(),
+        _receiptService = receiptService ?? ReceiptService();
 
   final AuditService _auditService;
   final LedgerService _ledgerService;
   final RiskService _riskService;
+  final ReceiptService _receiptService;
 
   Future<String> createDebt({
     required String marketId,
@@ -54,6 +58,19 @@ class DebtService {
       'created_at': DateTime.now().toIso8601String(),
     });
 
+    final receiptId = await _receiptService.createDebtReceipt(
+      marketId: marketId,
+      customerId: customerId,
+      debtId: debt.id,
+      amount: amount,
+      currency: currency,
+      createdBy: createdBy,
+    );
+
+    await PBClient.instance.collection('debts').update(debt.id, body: {
+      'receipt_id': receiptId,
+    });
+
     await _ledgerService.record(
       marketId: marketId,
       customerId: customerId,
@@ -64,6 +81,7 @@ class DebtService {
       newBalance: newBalance,
       currency: currency,
       createdBy: createdBy,
+      receiptId: receiptId,
       reason: description,
     );
 
@@ -77,6 +95,7 @@ class DebtService {
         'amount': amount,
         'customer_id': customerId,
         'risk_level': risk.riskLevel,
+        'receipt_id': receiptId,
       },
       reason: description,
     );
