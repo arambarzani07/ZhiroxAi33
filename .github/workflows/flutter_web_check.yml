@@ -34,4 +34,4 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Build web
-        run: flutter build web --release --dart-define=POCKETBASE_URL=${{ secrets.POCKETBASE_URL || 'https://pocketbase-production-18bc.up.railway.app' }}
+        run: flutter build web --release --dart-define=POCKETBASE_URL=https://pocketbase-production-18bc.up.railway.app
