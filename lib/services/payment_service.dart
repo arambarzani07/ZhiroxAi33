@@ -2,14 +2,20 @@ import '../core/enums/ledger_entry_type.dart';
 import 'audit_service.dart';
 import 'ledger_service.dart';
 import 'pb_client.dart';
+import 'receipt_service.dart';
 
 class PaymentService {
-  PaymentService({AuditService? auditService, LedgerService? ledgerService})
-      : _auditService = auditService ?? AuditService(),
-        _ledgerService = ledgerService ?? LedgerService();
+  PaymentService({
+    AuditService? auditService,
+    LedgerService? ledgerService,
+    ReceiptService? receiptService,
+  })  : _auditService = auditService ?? AuditService(),
+        _ledgerService = ledgerService ?? LedgerService(),
+        _receiptService = receiptService ?? ReceiptService();
 
   final AuditService _auditService;
   final LedgerService _ledgerService;
+  final ReceiptService _receiptService;
 
   Future<String> receivePayment({
     required String marketId,
@@ -42,6 +48,20 @@ class PaymentService {
       'created_at': DateTime.now().toIso8601String(),
     });
 
+    final receiptId = await _receiptService.createPaymentReceipt(
+      marketId: marketId,
+      customerId: customerId,
+      debtId: debtId,
+      paymentId: payment.id,
+      amount: amount,
+      currency: currency,
+      createdBy: createdBy,
+    );
+
+    await PBClient.instance.collection('payments').update(payment.id, body: {
+      'receipt_id': receiptId,
+    });
+
     await PBClient.instance.collection('debts').update(debtId, body: {
       'remaining': newBalance,
       'status': newBalance <= 0 ? 'paid' : 'partial',
@@ -58,6 +78,7 @@ class PaymentService {
       newBalance: newBalance,
       currency: currency,
       createdBy: createdBy,
+      receiptId: receiptId,
       reason: note,
     );
 
@@ -72,6 +93,7 @@ class PaymentService {
         'debt_id': debtId,
         'previous_balance': previousBalance,
         'new_balance': newBalance,
+        'receipt_id': receiptId,
       },
       reason: note,
     );
