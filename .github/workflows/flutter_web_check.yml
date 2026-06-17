@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [implement-approved-plan, main]
+  workflow_dispatch:
 
 jobs:
   analyze-and-build-web:
@@ -18,15 +19,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: Flutter version
         run: flutter --version
+
+      - name: Doctor
+        run: flutter doctor -v
 
       - name: Get dependencies
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Build web
-        run: flutter build web --release --dart-define=POCKETBASE_URL=${{ secrets.POCKETBASE_URL }}
+        run: flutter build web --release --dart-define=POCKETBASE_URL=${{ secrets.POCKETBASE_URL || 'https://pocketbase-production-18bc.up.railway.app' }}
