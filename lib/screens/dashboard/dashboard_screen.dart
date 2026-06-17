@@ -7,6 +7,7 @@ import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
 import '../debt/add_debt_screen.dart';
+import '../payment/receive_payment_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -32,6 +33,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _openAddDebt() async {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => const AddDebtScreen()),
+    );
+    if (created == true && mounted) {
+      setState(_reloadStats);
+    }
+  }
+
+  Future<void> _openReceivePayment() async {
+    final created = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()),
     );
     if (created == true && mounted) {
       setState(_reloadStats);
@@ -78,9 +88,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Expanded(
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 620),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -95,10 +110,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ],
                         ),
                       ),
-                      FilledButton.icon(
-                        onPressed: _openAddDebt,
-                        icon: const Icon(Icons.add),
-                        label: const Text('قەرزی نوێ'),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: _openAddDebt,
+                            icon: const Icon(Icons.add),
+                            label: const Text('قەرزی نوێ'),
+                          ),
+                          FilledButton.icon(
+                            onPressed: _openReceivePayment,
+                            icon: const Icon(Icons.payments),
+                            label: const Text('پارەدانەوە'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
