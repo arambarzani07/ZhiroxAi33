@@ -6,6 +6,7 @@ import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
+import '../debt/add_debt_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,8 +21,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _reloadStats();
+  }
+
+  void _reloadStats() {
     final marketId = context.read<AppStateProvider>().marketId;
     _statsFuture = DashboardService().loadStats(marketId: marketId);
+  }
+
+  Future<void> _openAddDebt() async {
+    final created = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const AddDebtScreen()),
+    );
+    if (created == true && mounted) {
+      setState(_reloadStats);
+    }
   }
 
   @override
@@ -37,6 +51,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.logout),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openAddDebt,
+        icon: const Icon(Icons.add),
+        label: const Text('قەرزی نوێ'),
       ),
       body: FutureBuilder<DashboardStats>(
         future: _statsFuture,
@@ -59,14 +78,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Credit Control Tower',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Credit Control Tower',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text('هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.'),
+                          ],
                         ),
+                      ),
+                      FilledButton.icon(
+                        onPressed: _openAddDebt,
+                        icon: const Icon(Icons.add),
+                        label: const Text('قەرزی نوێ'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text('هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.'),
                   const SizedBox(height: 20),
                   ResponsiveDashboardGrid(
                     children: [
