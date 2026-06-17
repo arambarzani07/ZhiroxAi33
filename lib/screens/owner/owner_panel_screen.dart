@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../services/owner_service.dart';
+import 'schema_health_screen.dart';
 
 class OwnerPanelScreen extends StatefulWidget {
   const OwnerPanelScreen({super.key});
@@ -30,6 +31,12 @@ class _OwnerPanelScreenState extends State<OwnerPanelScreen> {
     await _snapshotFuture;
   }
 
+  void _openSchemaHealth() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const SchemaHealthScreen()),
+    );
+  }
+
   String _dateText(DateTime? date) {
     if (date == null) return '-';
     return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
@@ -38,7 +45,16 @@ class _OwnerPanelScreenState extends State<OwnerPanelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SaaS Owner Panel')),
+      appBar: AppBar(
+        title: const Text('SaaS Owner Panel'),
+        actions: [
+          IconButton(
+            tooltip: 'Schema Health',
+            onPressed: _openSchemaHealth,
+            icon: const Icon(Icons.schema),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<OwnerPanelSnapshot>(
@@ -65,12 +81,33 @@ class _OwnerPanelScreenState extends State<OwnerPanelScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'System Owner Control Tower',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 700),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'System Owner Control Tower',
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text('ئەم بەشە تەنها بۆ خاوەنی سیستەمە؛ داتای تایبەتی قەرز/کڕیار/پارەدانەوەی مارکێتەکان ناخوێنێتەوە.'),
+                              ],
+                            ),
+                          ),
+                          FilledButton.icon(
+                            onPressed: _openSchemaHealth,
+                            icon: const Icon(Icons.schema),
+                            label: const Text('Schema Health'),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text('ئەم بەشە تەنها بۆ خاوەنی سیستەمە؛ داتای تایبەتی قەرز/کڕیار/پارەدانەوەی مارکێتەکان ناخوێنێتەوە.'),
                       const SizedBox(height: 20),
                       ResponsiveDashboardGrid(
                         children: [
