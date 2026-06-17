@@ -22,6 +22,11 @@ Branch: `implement-approved-plan`
 - Customer Debt Passport foundation
 - Customer risk/trust score UI
 - Customer score query service with safe fallback
+- Smart Lock UI
+- Smart Lock query service
+- Lock history preview
+- Unlock request flow to Approval Center
+- Add Debt Smart Lock protection
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -47,10 +52,9 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Smart Lock UI
-2. Receipt/PDF/QR module
-3. Evidence Vault
-4. SaaS Owner Panel
+1. Receipt/PDF/QR module
+2. Evidence Vault
+3. SaaS Owner Panel
 ```
 
 ## Test commands
