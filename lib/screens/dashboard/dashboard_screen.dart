@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/enums/system_role.dart';
 import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
@@ -10,6 +11,7 @@ import '../approval/approval_center_screen.dart';
 import '../audit/audit_log_screen.dart';
 import '../customer/customer_list_screen.dart';
 import '../debt/add_debt_screen.dart';
+import '../owner/owner_panel_screen.dart';
 import '../payment/receive_payment_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -78,13 +80,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Future<void> _openOwnerPanel() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const OwnerPanelScreen()),
+    );
+    if (mounted) {
+      setState(_reloadStats);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppStateProvider>();
+    final isSystemOwner = appState.role == SystemRole.systemOwner;
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConfig.productNameKurdish),
         actions: [
+          if (isSystemOwner)
+            IconButton(
+              tooltip: 'SaaS Owner Panel',
+              onPressed: _openOwnerPanel,
+              icon: const Icon(Icons.admin_panel_settings),
+            ),
           IconButton(
             tooltip: 'چوونەدەرەوە',
             onPressed: () => appState.logout(),
@@ -130,13 +148,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Credit Control Tower',
+                              isSystemOwner ? 'System Owner Control Tower' : 'Credit Control Tower',
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            const Text('هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.'),
+                            Text(
+                              isSystemOwner
+                                  ? 'داتای مارکێتەکان بە شێوەی aggregate/operational دەبینرێت، نەک قەرز و کڕیاری تایبەتی.'
+                                  : 'هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.',
+                            ),
                           ],
                         ),
                       ),
@@ -144,6 +166,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         spacing: 10,
                         runSpacing: 10,
                         children: [
+                          if (isSystemOwner)
+                            FilledButton.icon(
+                              onPressed: _openOwnerPanel,
+                              icon: const Icon(Icons.admin_panel_settings),
+                              label: const Text('Owner Panel'),
+                            ),
                           FilledButton.icon(
                             onPressed: _openAddDebt,
                             icon: const Icon(Icons.add),
