@@ -36,6 +36,9 @@ Branch: `implement-approved-plan`
 - Owner Panel direct role guard
 - Schema Health direct role guard
 - Role permission matrix documentation
+- Dashboard avoids debt/payment/customer queries for non-market roles
+- GitHub Actions Flutter web check workflow
+- Compile and build check guide
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
 - Approval Center UI
@@ -53,7 +56,7 @@ Branch: `implement-approved-plan`
 ## Next modules
 
 ```text
-1. Flutter analyze and compile fixes
+1. Read GitHub Actions logs and fix reported compile issues
 2. PDF Kurdish font embedding
 3. Production QA pass
 4. PocketBase API rules setup
