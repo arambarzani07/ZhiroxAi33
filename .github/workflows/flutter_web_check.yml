@@ -32,11 +32,19 @@ jobs:
 
       - name: Analyze
         continue-on-error: true
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos 2>&1 | tee analyze.log
+        run: |
+          set +e
+          flutter analyze --no-fatal-warnings --no-fatal-infos > analyze.log 2>&1
+          echo $? > analyze.exit
+          cat analyze.log
 
       - name: Build web
         continue-on-error: true
-        run: flutter build web --release 2>&1 | tee build.log
+        run: |
+          set +e
+          flutter build web --release > build.log 2>&1
+          echo $? > build.exit
+          cat build.log
 
       - name: Upload logs
         if: always()
@@ -45,10 +53,12 @@ jobs:
           name: flutter-check-logs
           path: |
             analyze.log
+            analyze.exit
             build.log
+            build.exit
 
       - name: Fail if analyze failed
-        run: test ! -s analyze.log || ! grep -E "error •|[0-9]+ issues? found" analyze.log
+        run: test "$(cat analyze.exit)" = "0"
 
       - name: Fail if build failed
-        run: test ! -s build.log || ! grep -E "Error:|FAILURE|Exception" build.log
+        run: test "$(cat build.exit)" = "0"
