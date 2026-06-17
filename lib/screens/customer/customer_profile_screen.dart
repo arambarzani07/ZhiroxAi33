@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../services/customer_service.dart';
 import '../../services/ledger_query_service.dart';
+import '../evidence/evidence_vault_screen.dart';
 import '../receipt/receipt_history_screen.dart';
 import 'customer_risk_panel.dart';
 import 'smart_lock_panel.dart';
@@ -42,6 +43,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ReceiptHistoryScreen(
+          customer: widget.customer,
+          marketId: widget.marketId,
+        ),
+      ),
+    );
+  }
+
+  void _openEvidenceVault() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EvidenceVaultScreen(
           customer: widget.customer,
           marketId: widget.marketId,
         ),
@@ -103,6 +115,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         title: const Text('پڕۆفایلی کڕیار'),
         actions: [
           IconButton(
+            tooltip: 'بەڵگەکان',
+            onPressed: _openEvidenceVault,
+            icon: const Icon(Icons.folder_copy),
+          ),
+          IconButton(
             tooltip: 'وەسڵەکان',
             onPressed: _openReceipts,
             icon: const Icon(Icons.receipt_long),
@@ -135,7 +152,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _CustomerHeader(customer: customer, onReceipts: _openReceipts),
+                      _CustomerHeader(
+                        customer: customer,
+                        onReceipts: _openReceipts,
+                        onEvidence: _openEvidenceVault,
+                      ),
                       const SizedBox(height: 20),
                       CustomerRiskPanel(
                         customer: customer,
@@ -184,10 +205,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 }
 
 class _CustomerHeader extends StatelessWidget {
-  const _CustomerHeader({required this.customer, required this.onReceipts});
+  const _CustomerHeader({required this.customer, required this.onReceipts, required this.onEvidence});
 
   final CustomerOption customer;
   final VoidCallback onReceipts;
+  final VoidCallback onEvidence;
 
   @override
   Widget build(BuildContext context) {
@@ -217,10 +239,21 @@ class _CustomerHeader extends StatelessWidget {
                     ],
                   ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: onReceipts,
-                  icon: const Icon(Icons.receipt_long),
-                  label: const Text('وەسڵەکان'),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: onEvidence,
+                      icon: const Icon(Icons.folder_copy),
+                      label: const Text('بەڵگەکان'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: onReceipts,
+                      icon: const Icon(Icons.receipt_long),
+                      label: const Text('وەسڵەکان'),
+                    ),
+                  ],
                 ),
               ],
             ),
