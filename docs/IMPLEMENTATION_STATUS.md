@@ -27,6 +27,13 @@ Branch: `implement-approved-plan`
 - Lock history preview
 - Unlock request flow to Approval Center
 - Add Debt Smart Lock protection
+- Receipt creation service
+- Receipt history screen
+- Receipt QR verification UI
+- Receipt PDF foundation service
+- Debt receipts connected to DebtService
+- Payment receipts connected to PaymentService
+- Customer profile linked to receipt history
 - Open debt lookup service
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
@@ -52,9 +59,8 @@ This is the first production foundation of the approved plan. The full system mu
 ## Next modules
 
 ```text
-1. Receipt/PDF/QR module
-2. Evidence Vault
-3. SaaS Owner Panel
+1. Evidence Vault
+2. SaaS Owner Panel
 ```
 
 ## Test commands
