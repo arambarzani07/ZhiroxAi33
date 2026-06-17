@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/security/app_permissions.dart';
+import '../../core/widgets/access_denied_view.dart';
 import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
+import '../../providers/app_state_provider.dart';
 import '../../services/owner_service.dart';
 import 'schema_health_screen.dart';
 
@@ -44,6 +48,14 @@ class _OwnerPanelScreenState extends State<OwnerPanelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final role = context.watch<AppStateProvider>().role;
+    if (!AppPermissions.canOpenOwnerPanel(role)) {
+      return const AccessDeniedView(
+        title: 'Owner Panel ڕێگەپێنەدراوە',
+        message: 'ئەم بەشە تەنها بۆ system_owner ـە. خاوەنی مارکێت و کارمەند نابێت ئەم بەشە ببینن.',
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('SaaS Owner Panel'),
