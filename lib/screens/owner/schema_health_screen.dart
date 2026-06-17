@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/security/app_permissions.dart';
+import '../../core/widgets/access_denied_view.dart';
 import '../../core/widgets/zhirox_page_container.dart';
+import '../../providers/app_state_provider.dart';
 import '../../services/schema_health_service.dart';
 
 class SchemaHealthScreen extends StatefulWidget {
@@ -31,6 +35,14 @@ class _SchemaHealthScreenState extends State<SchemaHealthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final role = context.watch<AppStateProvider>().role;
+    if (!AppPermissions.canViewSchemaHealth(role)) {
+      return const AccessDeniedView(
+        title: 'Schema Health ڕێگەپێنەدراوە',
+        message: 'ئەم بەشە تەنها بۆ system_owner ـە، چونکە دۆخی بنچینەیی داتابەیس و deployment پیشان دەدات.',
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('PocketBase Schema Health')),
       body: RefreshIndicator(
