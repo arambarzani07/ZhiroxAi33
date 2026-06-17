@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../services/customer_service.dart';
 import '../../services/ledger_query_service.dart';
+import '../receipt/receipt_history_screen.dart';
 import 'customer_risk_panel.dart';
 import 'smart_lock_panel.dart';
 
@@ -34,6 +35,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     _timelineFuture = _ledgerQueryService.listCustomerTimeline(
       customerId: widget.customer.id,
       marketId: widget.marketId,
+    );
+  }
+
+  void _openReceipts() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReceiptHistoryScreen(
+          customer: widget.customer,
+          marketId: widget.marketId,
+        ),
+      ),
     );
   }
 
@@ -87,7 +99,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Widget build(BuildContext context) {
     final customer = widget.customer;
     return Scaffold(
-      appBar: AppBar(title: const Text('پڕۆفایلی کڕیار')),
+      appBar: AppBar(
+        title: const Text('پڕۆفایلی کڕیار'),
+        actions: [
+          IconButton(
+            tooltip: 'وەسڵەکان',
+            onPressed: _openReceipts,
+            icon: const Icon(Icons.receipt_long),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<LedgerTimelineItem>>(
@@ -114,7 +135,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _CustomerHeader(customer: customer),
+                      _CustomerHeader(customer: customer, onReceipts: _openReceipts),
                       const SizedBox(height: 20),
                       CustomerRiskPanel(
                         customer: customer,
@@ -163,9 +184,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 }
 
 class _CustomerHeader extends StatelessWidget {
-  const _CustomerHeader({required this.customer});
+  const _CustomerHeader({required this.customer, required this.onReceipts});
 
   final CustomerOption customer;
+  final VoidCallback onReceipts;
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +216,11 @@ class _CustomerHeader extends StatelessWidget {
                       Text('Customer Debt Passport — ${customer.id}'),
                     ],
                   ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: onReceipts,
+                  icon: const Icon(Icons.receipt_long),
+                  label: const Text('وەسڵەکان'),
                 ),
               ],
             ),
