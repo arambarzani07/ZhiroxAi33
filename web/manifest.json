@@ -1,0 +1,11 @@
+{
+  "name": "Zhirox AI Debt",
+  "short_name": "ZhiroxDebt",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#1B4DFF",
+  "description": "Kurdish Sorani RTL debt and credit management system.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false
+}
