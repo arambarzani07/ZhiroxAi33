@@ -39,6 +39,8 @@ Branch: `implement-approved-plan`
 - Dashboard avoids debt/payment/customer queries for non-market roles
 - GitHub Actions Flutter web check workflow
 - Compile and build check guide
+- Risk score progress type fixed for compile safety
+- Evidence quality progress type fixed for compile safety
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
 - Approval Center UI
