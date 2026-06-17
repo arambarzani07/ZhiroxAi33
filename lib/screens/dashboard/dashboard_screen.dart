@@ -7,6 +7,7 @@ import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
 import '../approval/approval_center_screen.dart';
+import '../audit/audit_log_screen.dart';
 import '../debt/add_debt_screen.dart';
 import '../payment/receive_payment_screen.dart';
 
@@ -52,6 +53,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _openApprovalCenter() async {
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const ApprovalCenterScreen()),
+    );
+    if (mounted) {
+      setState(_reloadStats);
+    }
+  }
+
+  Future<void> _openAuditLog() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const AuditLogScreen()),
     );
     if (mounted) {
       setState(_reloadStats);
@@ -138,6 +148,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             onPressed: _openApprovalCenter,
                             icon: const Icon(Icons.verified_user),
                             label: const Text('پەسندکردن'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _openAuditLog,
+                            icon: const Icon(Icons.history),
+                            label: const Text('مێژووی کردار'),
                           ),
                         ],
                       ),
