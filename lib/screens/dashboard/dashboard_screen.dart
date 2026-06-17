@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/config/app_config.dart';
-import '../../core/enums/system_role.dart';
+import '../../core/security/app_permissions.dart';
 import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
@@ -39,65 +39,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => const AddDebtScreen()),
     );
-    if (created == true && mounted) {
-      setState(_reloadStats);
-    }
+    if (created == true && mounted) setState(_reloadStats);
   }
 
   Future<void> _openReceivePayment() async {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()),
     );
-    if (created == true && mounted) {
-      setState(_reloadStats);
-    }
+    if (created == true && mounted) setState(_reloadStats);
   }
 
   Future<void> _openApprovalCenter() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ApprovalCenterScreen()),
-    );
-    if (mounted) {
-      setState(_reloadStats);
-    }
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ApprovalCenterScreen()));
+    if (mounted) setState(_reloadStats);
   }
 
   Future<void> _openAuditLog() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const AuditLogScreen()),
-    );
-    if (mounted) {
-      setState(_reloadStats);
-    }
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AuditLogScreen()));
+    if (mounted) setState(_reloadStats);
   }
 
   Future<void> _openCustomers() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CustomerListScreen()),
-    );
-    if (mounted) {
-      setState(_reloadStats);
-    }
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerListScreen()));
+    if (mounted) setState(_reloadStats);
   }
 
   Future<void> _openOwnerPanel() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const OwnerPanelScreen()),
-    );
-    if (mounted) {
-      setState(_reloadStats);
-    }
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OwnerPanelScreen()));
+    if (mounted) setState(_reloadStats);
   }
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppStateProvider>();
-    final isSystemOwner = appState.role == SystemRole.systemOwner;
+    final role = appState.role;
+    final canOwner = AppPermissions.canOpenOwnerPanel(role);
+    final canMarket = AppPermissions.canUseMarketWorkspace(role);
+    final canCreateDebt = AppPermissions.canCreateDebt(role);
+    final canReceivePayment = AppPermissions.canReceivePayment(role);
+    final canViewCustomers = AppPermissions.canViewCustomers(role);
+    final canApproval = AppPermissions.canViewApprovalCenter(role);
+    final canAudit = AppPermissions.canViewAuditLog(role);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConfig.productNameKurdish),
         actions: [
-          if (isSystemOwner)
+          if (canOwner)
             IconButton(
               tooltip: 'SaaS Owner Panel',
               onPressed: _openOwnerPanel,
@@ -110,11 +98,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openAddDebt,
-        icon: const Icon(Icons.add),
-        label: const Text('قەرزی نوێ'),
-      ),
+      floatingActionButton: canCreateDebt
+          ? FloatingActionButton.extended(
+              onPressed: _openAddDebt,
+              icon: const Icon(Icons.add),
+              label: const Text('قەرزی نوێ'),
+            )
+          : null,
       body: FutureBuilder<DashboardStats>(
         future: _statsFuture,
         builder: (context, snapshot) {
@@ -148,16 +138,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isSystemOwner ? 'System Owner Control Tower' : 'Credit Control Tower',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              canOwner ? 'System Owner Control Tower' : 'Credit Control Tower',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              isSystemOwner
+                              canOwner
                                   ? 'داتای مارکێتەکان بە شێوەی aggregate/operational دەبینرێت، نەک قەرز و کڕیاری تایبەتی.'
-                                  : 'هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.',
+                                  : canMarket
+                                      ? 'هەموو ژمارەکان لە PocketBase ـی ڕاستەقینە دەخوێندرێنەوە.'
+                                      : 'بەشی تایبەت بە role ـی ئێستات سنووردارکراوە.',
                             ),
                           ],
                         ),
@@ -166,55 +156,77 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         spacing: 10,
                         runSpacing: 10,
                         children: [
-                          if (isSystemOwner)
+                          if (canOwner)
                             FilledButton.icon(
                               onPressed: _openOwnerPanel,
                               icon: const Icon(Icons.admin_panel_settings),
                               label: const Text('Owner Panel'),
                             ),
-                          FilledButton.icon(
-                            onPressed: _openAddDebt,
-                            icon: const Icon(Icons.add),
-                            label: const Text('قەرزی نوێ'),
-                          ),
-                          FilledButton.icon(
-                            onPressed: _openReceivePayment,
-                            icon: const Icon(Icons.payments),
-                            label: const Text('پارەدانەوە'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: _openCustomers,
-                            icon: const Icon(Icons.people),
-                            label: const Text('کڕیارەکان'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: _openApprovalCenter,
-                            icon: const Icon(Icons.verified_user),
-                            label: const Text('پەسندکردن'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: _openAuditLog,
-                            icon: const Icon(Icons.history),
-                            label: const Text('مێژووی کردار'),
-                          ),
+                          if (canCreateDebt)
+                            FilledButton.icon(
+                              onPressed: _openAddDebt,
+                              icon: const Icon(Icons.add),
+                              label: const Text('قەرزی نوێ'),
+                            ),
+                          if (canReceivePayment)
+                            FilledButton.icon(
+                              onPressed: _openReceivePayment,
+                              icon: const Icon(Icons.payments),
+                              label: const Text('پارەدانەوە'),
+                            ),
+                          if (canViewCustomers)
+                            OutlinedButton.icon(
+                              onPressed: _openCustomers,
+                              icon: const Icon(Icons.people),
+                              label: const Text('کڕیارەکان'),
+                            ),
+                          if (canApproval)
+                            OutlinedButton.icon(
+                              onPressed: _openApprovalCenter,
+                              icon: const Icon(Icons.verified_user),
+                              label: const Text('پەسندکردن'),
+                            ),
+                          if (canAudit)
+                            OutlinedButton.icon(
+                              onPressed: _openAuditLog,
+                              icon: const Icon(Icons.history),
+                              label: const Text('مێژووی کردار'),
+                            ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  ResponsiveDashboardGrid(
-                    children: [
-                      _StatCard(title: 'کۆی قەرز', value: stats.totalDebtText, icon: Icons.account_balance_wallet),
-                      _StatCard(title: 'قەرزی ماوە', value: stats.remainingDebtText, icon: Icons.warning_amber),
-                      _StatCard(title: 'پارەدانەوەکان', value: stats.totalPaymentsText, icon: Icons.payments),
-                      _StatCard(title: 'کڕیارەکان', value: stats.totalCustomers.toString(), icon: Icons.people),
-                    ],
-                  ),
+                  if (canMarket)
+                    ResponsiveDashboardGrid(
+                      children: [
+                        _StatCard(title: 'کۆی قەرز', value: stats.totalDebtText, icon: Icons.account_balance_wallet),
+                        _StatCard(title: 'قەرزی ماوە', value: stats.remainingDebtText, icon: Icons.warning_amber),
+                        _StatCard(title: 'پارەدانەوەکان', value: stats.totalPaymentsText, icon: Icons.payments),
+                        _StatCard(title: 'کڕیارەکان', value: stats.totalCustomers.toString(), icon: Icons.people),
+                      ],
+                    )
+                  else
+                    const _RoleNoticeCard(),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _RoleNoticeCard extends StatelessWidget {
+  const _RoleNoticeCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Text('ئەم dashboard ـە بەپێی role سنووردارکراوە. System owner لە Owner Panel کار دەکات؛ customer تەنها portal ـی خۆی دەبینێت.'),
       ),
     );
   }
