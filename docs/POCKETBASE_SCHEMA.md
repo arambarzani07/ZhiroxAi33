@@ -47,6 +47,7 @@ last_login_at: date
 ```text
 market_id: relation -> markets
 debt_number: text
+receipt_id: relation -> receipts
 ledger_locked: bool
 requires_approval: bool
 approval_id: relation -> approvals
@@ -70,6 +71,23 @@ previous_balance: number
 new_balance: number
 currency: text
 archived: bool
+```
+
+## receipts
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+debt_id: relation -> debts
+payment_id: relation -> payments
+receipt_type: select(debt, payment, correction, discount, forgiveness)
+receipt_number: text
+amount: number
+currency: text
+verification_code: text
+verification_url: text
+created_by: relation -> users
+created_at: date
 ```
 
 ## audit_logs
