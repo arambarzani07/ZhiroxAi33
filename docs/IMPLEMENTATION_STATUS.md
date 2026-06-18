@@ -35,9 +35,15 @@ Branch: `implement-approved-plan`
 - Role permission helper
 - Access denied view
 - Dashboard action visibility by role
+- Guarded Add Debt screen
+- Guarded Receive Payment screen
+- Guarded Customer List screen
+- Guarded Approval Center screen
+- Guarded Audit Log screen
 - Owner Panel direct role guard
 - Schema Health direct role guard
 - Role permission matrix documentation
+- Frontend completion checklist
 - Dashboard avoids debt/payment/customer queries for non-market roles
 - GitHub Actions Flutter web check workflow
 - GitHub Actions manual workflow dispatch
@@ -80,13 +86,24 @@ POCKETBASE_API_RULES_SETUP.md: ready
 manual PocketBase Admin UI application: still required
 ```
 
-## Next modules
+## Frontend status
 
 ```text
-1. Apply PocketBase rules in the real Railway PocketBase Admin UI
-2. PDF Kurdish font embedding
-3. Production QA pass
-4. Netlify production deployment check
+Main market workflow screens: implemented
+Owner workflow screens: implemented
+Role-based Dashboard navigation: implemented
+Guarded navigation layer: implemented
+Frontend completion checklist: ready
+```
+
+## Next frontend modules
+
+```text
+1. Customer create/edit frontend screen
+2. Market settings/profile frontend screen
+3. Customer portal read-only frontend screen
+4. Reports/exports frontend foundation
+5. Notification center frontend screen
 ```
 
 ## Test commands
