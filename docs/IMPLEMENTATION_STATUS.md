@@ -31,6 +31,9 @@ Branch: `implement-approved-plan`
 - SaaS Owner service
 - SaaS Owner Panel screen
 - Owner Panel linked to Schema Health
+- Market settings/profile service
+- Market settings/profile frontend screen
+- Market settings dashboard shortcut
 - PocketBase setup guide
 - PocketBase schema collections JSON baseline
 - PocketBase API rules baseline
@@ -100,6 +103,7 @@ Guarded navigation layer: implemented
 Frontend completion checklist: ready
 Receipt PDF Kurdish RTL foundation: implemented
 Customer create/edit frontend: implemented
+Market settings/profile frontend: implemented
 ```
 
 ## PDF receipt status
@@ -115,10 +119,9 @@ Final production font asset: still required before PDF QA
 ## Next frontend modules
 
 ```text
-1. Market settings/profile frontend screen
-2. Customer portal read-only frontend screen
-3. Reports/exports frontend foundation
-4. Notification center frontend screen
+1. Customer portal read-only frontend screen
+2. Reports/exports frontend foundation
+3. Notification center frontend screen
 ```
 
 ## Test commands
