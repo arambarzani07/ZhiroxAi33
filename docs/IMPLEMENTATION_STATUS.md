@@ -13,6 +13,8 @@ Branch: `implement-approved-plan`
 - Dashboard using real PocketBase data
 - Login screen
 - Customer lookup/list/profile
+- Customer create/edit frontend screen
+- Customer create/edit service methods
 - Customer ledger timeline
 - Customer Debt Passport foundation
 - Customer risk/trust score UI
@@ -97,6 +99,7 @@ Role-based Dashboard navigation: implemented
 Guarded navigation layer: implemented
 Frontend completion checklist: ready
 Receipt PDF Kurdish RTL foundation: implemented
+Customer create/edit frontend: implemented
 ```
 
 ## PDF receipt status
@@ -112,11 +115,10 @@ Final production font asset: still required before PDF QA
 ## Next frontend modules
 
 ```text
-1. Customer create/edit frontend screen
-2. Market settings/profile frontend screen
-3. Customer portal read-only frontend screen
-4. Reports/exports frontend foundation
-5. Notification center frontend screen
+1. Market settings/profile frontend screen
+2. Customer portal read-only frontend screen
+3. Reports/exports frontend foundation
+4. Notification center frontend screen
 ```
 
 ## Test commands
