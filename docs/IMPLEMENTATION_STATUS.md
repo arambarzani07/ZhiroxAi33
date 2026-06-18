@@ -29,6 +29,8 @@ Branch: `implement-approved-plan`
 - Owner Panel linked to Schema Health
 - PocketBase setup guide
 - PocketBase schema collections JSON baseline
+- PocketBase API rules baseline
+- PocketBase API rules setup guide
 - Schema Health service and screen
 - Role permission helper
 - Access denied view
@@ -69,10 +71,19 @@ flutter analyze: success
 flutter build web --release: success
 ```
 
+## PocketBase backend status
+
+```text
+schema_collections.json: ready
+api_rules.json: ready
+POCKETBASE_API_RULES_SETUP.md: ready
+manual PocketBase Admin UI application: still required
+```
+
 ## Next modules
 
 ```text
-1. PocketBase API rules setup
+1. Apply PocketBase rules in the real Railway PocketBase Admin UI
 2. PDF Kurdish font embedding
 3. Production QA pass
 4. Netlify production deployment check
