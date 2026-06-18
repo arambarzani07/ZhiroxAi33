@@ -10,6 +10,7 @@ import '../../services/dashboard_service.dart';
 import '../approval/guarded_approval_center_screen.dart';
 import '../audit/guarded_audit_log_screen.dart';
 import '../customer/guarded_customer_list_screen.dart';
+import '../customer_portal/customer_portal_screen.dart';
 import '../debt/guarded_add_debt_screen.dart';
 import '../market/market_settings_screen.dart';
 import '../owner/owner_panel_screen.dart';
@@ -65,6 +66,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (mounted) setState(_reloadStats);
   }
 
+  Future<void> _openCustomerPortal() async {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerPortalScreen()));
+    if (mounted) setState(_reloadStats);
+  }
+
   Future<void> _openMarketSettings() async {
     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MarketSettingsScreen()));
     if (mounted) setState(_reloadStats);
@@ -87,11 +93,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final canApproval = AppPermissions.canViewApprovalCenter(role);
     final canAudit = AppPermissions.canViewAuditLog(role);
     final canMarketSettings = AppPermissions.canManageMarketSettings(role);
+    final canCustomerPortal = AppPermissions.canViewCustomerPortal(role);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConfig.productNameKurdish),
         actions: [
+          if (canCustomerPortal)
+            IconButton(
+              tooltip: 'پۆرتاڵی کڕیار',
+              onPressed: _openCustomerPortal,
+              icon: const Icon(Icons.account_circle_outlined),
+            ),
           if (canMarketSettings)
             IconButton(
               tooltip: 'ڕێکخستنەکانی مارکێت',
@@ -140,11 +153,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              canOwner ? 'System Owner Control Tower' : 'Credit Control Tower',
+                              canOwner
+                                  ? 'System Owner Control Tower'
+                                  : canCustomerPortal
+                                      ? 'پۆرتاڵی کڕیار'
+                                      : 'Credit Control Tower',
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            Text(canOwner ? 'بۆ بەڕێوەبردنی SaaS بچۆ Owner Panel.' : 'هەموو ژمارەکان لە PocketBase دەخوێندرێنەوە.'),
+                            Text(canOwner
+                                ? 'بۆ بەڕێوەبردنی SaaS بچۆ Owner Panel.'
+                                : canCustomerPortal
+                                    ? 'Balance، ledger و وەسڵەکانی خۆت ببینە.'
+                                    : 'هەموو ژمارەکان لە PocketBase دەخوێندرێنەوە.'),
                           ],
                         ),
                       ),
@@ -153,6 +174,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         runSpacing: 10,
                         children: [
                           if (canOwner) FilledButton.icon(onPressed: _openOwnerPanel, icon: const Icon(Icons.admin_panel_settings), label: const Text('Owner Panel')),
+                          if (canCustomerPortal) FilledButton.icon(onPressed: _openCustomerPortal, icon: const Icon(Icons.account_circle_outlined), label: const Text('پۆرتاڵی من')),
                           if (canCreateDebt) FilledButton.icon(onPressed: _openAddDebt, icon: const Icon(Icons.add), label: const Text('قەرزی نوێ')),
                           if (canReceivePayment) FilledButton.icon(onPressed: _openReceivePayment, icon: const Icon(Icons.payments), label: const Text('پارەدانەوە')),
                           if (canViewCustomers) OutlinedButton.icon(onPressed: _openCustomers, icon: const Icon(Icons.people), label: const Text('کڕیارەکان')),
@@ -173,6 +195,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _StatCard(title: 'کڕیارەکان', value: stats.totalCustomers.toString(), icon: Icons.people),
                       ],
                     )
+                  else if (canCustomerPortal)
+                    _CustomerPortalNoticeCard(onOpen: _openCustomerPortal)
                   else
                     const _RoleNoticeCard(),
                 ],
@@ -180,6 +204,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _CustomerPortalNoticeCard extends StatelessWidget {
+  const _CustomerPortalNoticeCard({required this.onOpen});
+
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('ئەم هەژمارە بۆ کڕیارە. لە پۆرتاڵی خۆت balance، ledger و وەسڵەکان ببینە.'),
+            const SizedBox(height: 14),
+            FilledButton.icon(onPressed: onOpen, icon: const Icon(Icons.account_circle_outlined), label: const Text('کردنەوەی پۆرتاڵی من')),
+          ],
+        ),
       ),
     );
   }
