@@ -10,9 +10,9 @@ import '../../services/dashboard_service.dart';
 import '../approval/approval_center_screen.dart';
 import '../audit/audit_log_screen.dart';
 import '../customer/customer_list_screen.dart';
-import '../debt/add_debt_screen.dart';
+import '../debt/guarded_add_debt_screen.dart';
 import '../owner/owner_panel_screen.dart';
-import '../payment/receive_payment_screen.dart';
+import '../payment/guarded_receive_payment_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -40,12 +40,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _openAddDebt() async {
-    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const AddDebtScreen()));
+    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const GuardedAddDebtScreen()));
     if (created == true && mounted) setState(_reloadStats);
   }
 
   Future<void> _openReceivePayment() async {
-    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const ReceivePaymentScreen()));
+    final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const GuardedReceivePaymentScreen()));
     if (created == true && mounted) setState(_reloadStats);
   }
 
