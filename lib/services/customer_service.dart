@@ -7,6 +7,8 @@ class CustomerOption {
     required this.currentBalance,
     required this.creditLimit,
     required this.overdueCount,
+    this.phone,
+    this.portalEnabled = false,
   });
 
   final String id;
@@ -14,6 +16,30 @@ class CustomerOption {
   final double currentBalance;
   final double creditLimit;
   final int overdueCount;
+  final String? phone;
+  final bool portalEnabled;
+}
+
+class CustomerUpsertRequest {
+  const CustomerUpsertRequest({
+    required this.name,
+    required this.phone,
+    required this.marketId,
+    required this.creditLimit,
+    required this.portalEnabled,
+    this.customerCode,
+    this.password,
+    this.currentBalance = 0,
+  });
+
+  final String name;
+  final String phone;
+  final String marketId;
+  final double creditLimit;
+  final bool portalEnabled;
+  final String? customerCode;
+  final String? password;
+  final double currentBalance;
 }
 
 class CustomerService {
@@ -27,16 +53,74 @@ class CustomerService {
           sort: 'name',
         );
 
-    return records.map((record) {
-      final data = record.data;
-      final name = (data['full_name'] ?? data['name'] ?? data['phone'] ?? 'کڕیار').toString();
-      return CustomerOption(
-        id: record.id,
-        name: name,
-        currentBalance: (data['current_balance'] as num?)?.toDouble() ?? 0,
-        creditLimit: (data['debt_limit'] as num?)?.toDouble() ?? 0,
-        overdueCount: (data['overdue_count'] as num?)?.toInt() ?? 0,
-      );
-    }).toList();
+    return records.map(_customerFromRecord).toList();
+  }
+
+  Future<CustomerOption> getCustomer(String id) async {
+    final record = await PBClient.instance.collection('users').getOne(id);
+    return _customerFromRecord(record);
+  }
+
+  Future<CustomerOption> createCustomer(CustomerUpsertRequest request) async {
+    final body = _bodyFromRequest(request, isCreate: true);
+    final record = await PBClient.instance.collection('users').create(body: body);
+    return _customerFromRecord(record);
+  }
+
+  Future<CustomerOption> updateCustomer(String id, CustomerUpsertRequest request) async {
+    final body = _bodyFromRequest(request, isCreate: false);
+    final record = await PBClient.instance.collection('users').update(id, body: body);
+    return _customerFromRecord(record);
+  }
+
+  Map<String, dynamic> _bodyFromRequest(CustomerUpsertRequest request, {required bool isCreate}) {
+    final trimmedName = request.name.trim();
+    final trimmedPhone = request.phone.trim();
+    final trimmedPassword = request.password?.trim() ?? '';
+    final customerCode = request.customerCode?.trim().isNotEmpty == true
+        ? request.customerCode!.trim()
+        : 'CUS-${DateTime.now().millisecondsSinceEpoch}';
+
+    final body = <String, dynamic>{
+      'name': trimmedName,
+      'full_name': trimmedName,
+      'phone': trimmedPhone,
+      'username': trimmedPhone,
+      'role': 'customer',
+      'system_role': 'customer',
+      'market_id': request.marketId,
+      'debt_limit': request.creditLimit,
+      'credit_limit': request.creditLimit,
+      'customer_code': customerCode,
+      'portal_enabled': request.portalEnabled,
+      'active': true,
+      'approved': true,
+    };
+
+    if (isCreate) {
+      body['current_balance'] = request.currentBalance;
+      body['overdue_count'] = 0;
+    }
+
+    if (trimmedPassword.isNotEmpty) {
+      body['password'] = trimmedPassword;
+      body['passwordConfirm'] = trimmedPassword;
+    }
+
+    return body;
+  }
+
+  CustomerOption _customerFromRecord(dynamic record) {
+    final data = record.data as Map<String, dynamic>? ?? const {};
+    final name = (data['full_name'] ?? data['name'] ?? data['phone'] ?? 'کڕیار').toString();
+    return CustomerOption(
+      id: record.id.toString(),
+      name: name,
+      currentBalance: (data['current_balance'] as num?)?.toDouble() ?? 0,
+      creditLimit: (data['debt_limit'] as num?)?.toDouble() ?? (data['credit_limit'] as num?)?.toDouble() ?? 0,
+      overdueCount: (data['overdue_count'] as num?)?.toInt() ?? 0,
+      phone: data['phone']?.toString(),
+      portalEnabled: data['portal_enabled'] == true,
+    );
   }
 }
