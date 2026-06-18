@@ -15,6 +15,9 @@ Branch: `implement-approved-plan`
 - Customer lookup/list/profile
 - Customer create/edit frontend screen
 - Customer create/edit service methods
+- Customer portal read-only service
+- Customer portal read-only frontend screen
+- Customer portal dashboard shortcut
 - Customer ledger timeline
 - Customer Debt Passport foundation
 - Customer risk/trust score UI
@@ -104,6 +107,7 @@ Frontend completion checklist: ready
 Receipt PDF Kurdish RTL foundation: implemented
 Customer create/edit frontend: implemented
 Market settings/profile frontend: implemented
+Customer portal read-only frontend: implemented
 ```
 
 ## PDF receipt status
@@ -119,9 +123,8 @@ Final production font asset: still required before PDF QA
 ## Next frontend modules
 
 ```text
-1. Customer portal read-only frontend screen
-2. Reports/exports frontend foundation
-3. Notification center frontend screen
+1. Reports/exports frontend foundation
+2. Notification center frontend screen
 ```
 
 ## Test commands
