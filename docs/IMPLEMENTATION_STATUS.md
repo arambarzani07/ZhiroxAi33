@@ -23,6 +23,8 @@ Branch: `implement-approved-plan`
 - Receipt history screen
 - Receipt QR verification UI
 - Receipt PDF foundation service
+- Kurdish RTL receipt PDF layout
+- Optional receipt PDF font loader
 - Evidence Vault service and screen
 - SaaS Owner service
 - SaaS Owner Panel screen
@@ -94,6 +96,17 @@ Owner workflow screens: implemented
 Role-based Dashboard navigation: implemented
 Guarded navigation layer: implemented
 Frontend completion checklist: ready
+Receipt PDF Kurdish RTL foundation: implemented
+```
+
+## PDF receipt status
+
+```text
+Kurdish RTL layout: implemented
+Official receipt fields: implemented
+Verification code and URL: implemented
+Optional font asset loading: implemented
+Final production font asset: still required before PDF QA
 ```
 
 ## Next frontend modules
