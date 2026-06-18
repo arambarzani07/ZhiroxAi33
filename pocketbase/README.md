@@ -1,6 +1,6 @@
 # PocketBase Setup — Zhirox AI Debt
 
-This folder contains the implementation baseline for the required PocketBase collections.
+This folder contains the implementation baseline for the required PocketBase collections and API rules.
 
 ## Important
 
@@ -27,6 +27,14 @@ support_tickets
 feature_flags
 ```
 
+## Files
+
+```text
+pocketbase/schema_collections.json
+pocketbase/api_rules.json
+docs/POCKETBASE_API_RULES_SETUP.md
+```
+
 ## Safe setup rule
 
 Do not delete old data or old collections. Add missing collections and missing fields only.
@@ -36,11 +44,15 @@ Do not delete old data or old collections. Add missing collections and missing f
 1. Open PocketBase Admin UI.
 2. Create missing collections from `schema_collections.json`.
 3. Add fields exactly as listed.
-4. Configure API rules by role and `market_id`.
-5. Create one `system_owner` user.
-6. Create one test market.
-7. Create one `market_manager` user with `market_id`.
-8. Run the app and open Owner Panel -> Schema Health.
+4. Configure API rules from `api_rules.json`.
+5. Read `docs/POCKETBASE_API_RULES_SETUP.md` before production.
+6. Create one `system_owner` user.
+7. Create one test market.
+8. Create one `market_manager` user with `market_id`.
+9. Create one `employee` user with `market_id`.
+10. Run the app and open Owner Panel -> Schema Health.
+11. Test that market users cannot see another market.
+12. Test that system owner cannot list private debts/payments/customers.
 
 ## Required first users
 
@@ -54,3 +66,7 @@ customer: reads only own portal data
 ## Privacy rule
 
 The system owner must not read private market debt, payment, customer, ledger, receipt, or evidence data. Owner tools should use markets, licenses, support tickets, plans, feature flags, and aggregate usage only.
+
+## Superuser warning
+
+Never use a PocketBase superuser account inside the public Flutter app. PocketBase superusers bypass API rules.
