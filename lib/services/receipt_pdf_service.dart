@@ -1,34 +1,179 @@
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../core/config/app_config.dart';
 import 'receipt_service.dart';
 
 class ReceiptPdfService {
+  static const String _regularFontAsset = 'assets/fonts/NotoNaskhArabic-Regular.ttf';
+  static const String _boldFontAsset = 'assets/fonts/NotoNaskhArabic-Bold.ttf';
+
   Future<Uint8List> buildReceiptPdf(ReceiptRecord receipt) async {
-    final doc = pw.Document();
+    final regularFont = await _tryLoadFont(_regularFontAsset);
+    final boldFont = await _tryLoadFont(_boldFontAsset);
+    final doc = pw.Document(
+      theme: regularFont == null
+          ? null
+          : pw.ThemeData.withFont(
+              base: regularFont,
+              bold: boldFont ?? regularFont,
+            ),
+    );
 
     doc.addPage(
       pw.Page(
-        build: (context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text('Zhirox AI Debt Receipt', style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 16),
-            pw.Text('Receipt No: ${receipt.receiptNumber}'),
-            pw.Text('Type: ${receipt.receiptType}'),
-            pw.Text('Customer ID: ${receipt.customerId}'),
-            pw.Text('Amount: ${receipt.amount.toStringAsFixed(0)} ${receipt.currency}'),
-            pw.Text('Verification Code: ${receipt.verificationCode}'),
-            pw.Text('Verification URL: ${receipt.verificationUrl}'),
-            if (receipt.createdAt != null) pw.Text('Created: ${receipt.createdAt!.toIso8601String()}'),
-            pw.SizedBox(height: 24),
-            pw.Text('This receipt is generated from the official Zhirox AI Debt ledger.'),
-          ],
+        margin: const pw.EdgeInsets.all(28),
+        build: (context) => pw.Directionality(
+          textDirection: pw.TextDirection.rtl,
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              _header(),
+              pw.SizedBox(height: 18),
+              _sectionTitle('وەسڵی فەرمی'),
+              pw.SizedBox(height: 10),
+              _row('ژمارەی وەسڵ', receipt.receiptNumber),
+              _row('جۆری وەسڵ', _receiptTypeLabel(receipt.receiptType)),
+              _row('ناسنامەی کڕیار', receipt.customerId),
+              _row('بڕی پارە', '${receipt.amount.toStringAsFixed(0)} ${receipt.currency}'),
+              _row('کۆدی پشتڕاستکردنەوە', receipt.verificationCode),
+              _row('لینکی پشتڕاستکردنەوە', receipt.verificationUrl),
+              if (receipt.createdAt != null) _row('بەروار', _dateText(receipt.createdAt!)),
+              pw.SizedBox(height: 20),
+              _noticeBox(),
+              pw.Spacer(),
+              _footer(),
+            ],
+          ),
         ),
       ),
     );
 
     return doc.save();
+  }
+
+  Future<pw.Font?> _tryLoadFont(String assetPath) async {
+    try {
+      final data = await rootBundle.load(assetPath);
+      return pw.Font.ttf(data);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  pw.Widget _header() {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(16),
+      decoration: pw.BoxDecoration(
+        color: PdfColor.fromHex('#0F172A'),
+        borderRadius: pw.BorderRadius.circular(14),
+      ),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text(
+            AppConfig.productNameKurdish,
+            textAlign: pw.TextAlign.center,
+            style: pw.TextStyle(
+              color: PdfColors.white,
+              fontSize: 22,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+          pw.SizedBox(height: 6),
+          pw.Text(
+            AppConfig.productSubtitleKurdish,
+            textAlign: pw.TextAlign.center,
+            style: const pw.TextStyle(color: PdfColors.white, fontSize: 11),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _sectionTitle(String title) {
+    return pw.Text(
+      title,
+      style: pw.TextStyle(
+        fontSize: 17,
+        fontWeight: pw.FontWeight.bold,
+      ),
+    );
+  }
+
+  pw.Widget _row(String label, String value) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      margin: const pw.EdgeInsets.only(bottom: 6),
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: PdfColor.fromHex('#E2E8F0')),
+        borderRadius: pw.BorderRadius.circular(10),
+      ),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            flex: 2,
+            child: pw.Text(label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          ),
+          pw.SizedBox(width: 8),
+          pw.Expanded(
+            flex: 3,
+            child: pw.Text(value, textAlign: pw.TextAlign.left),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _noticeBox() {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(14),
+      decoration: pw.BoxDecoration(
+        color: PdfColor.fromHex('#FFF7ED'),
+        border: pw.Border.all(color: PdfColor.fromHex('#FDBA74')),
+        borderRadius: pw.BorderRadius.circular(12),
+      ),
+      child: pw.Text(
+        'ئەم وەسڵە لە ledger ـی فەرمیی ${AppConfig.productNameKurdish} درووستکراوە. تکایە بۆ پشتڕاستکردنەوە کۆدی وەسڵ یان QR بەکاربهێنە.',
+        textAlign: pw.TextAlign.right,
+      ),
+    );
+  }
+
+  pw.Widget _footer() {
+    return pw.Text(
+      'Generated by ${AppConfig.productName} — Cash-only debt ledger receipt',
+      textAlign: pw.TextAlign.center,
+      style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600),
+    );
+  }
+
+  String _receiptTypeLabel(String type) {
+    switch (type) {
+      case 'debt':
+        return 'قەرز';
+      case 'payment':
+        return 'پارەدانەوە';
+      case 'correction':
+        return 'چاککردنەوە';
+      case 'discount':
+        return 'داشکاندن';
+      case 'forgiveness':
+        return 'بەخشین';
+      default:
+        return type;
+    }
+  }
+
+  String _dateText(DateTime date) {
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '${date.year}/$month/$day $hour:$minute';
   }
 }
