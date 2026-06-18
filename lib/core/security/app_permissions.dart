@@ -23,6 +23,10 @@ class AppPermissions {
     return role == SystemRole.marketManager || role == SystemRole.employee;
   }
 
+  static bool canManageMarketSettings(SystemRole? role) {
+    return role == SystemRole.marketManager;
+  }
+
   static bool canViewApprovalCenter(SystemRole? role) {
     return role == SystemRole.marketManager;
   }
