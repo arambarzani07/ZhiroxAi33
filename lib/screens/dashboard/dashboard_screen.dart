@@ -11,6 +11,7 @@ import '../approval/guarded_approval_center_screen.dart';
 import '../audit/guarded_audit_log_screen.dart';
 import '../customer/guarded_customer_list_screen.dart';
 import '../debt/guarded_add_debt_screen.dart';
+import '../market/market_settings_screen.dart';
 import '../owner/owner_panel_screen.dart';
 import '../payment/guarded_receive_payment_screen.dart';
 
@@ -64,6 +65,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (mounted) setState(_reloadStats);
   }
 
+  Future<void> _openMarketSettings() async {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MarketSettingsScreen()));
+    if (mounted) setState(_reloadStats);
+  }
+
   Future<void> _openOwnerPanel() async {
     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OwnerPanelScreen()));
     if (mounted) setState(_reloadStats);
@@ -80,11 +86,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final canViewCustomers = AppPermissions.canViewCustomers(role);
     final canApproval = AppPermissions.canViewApprovalCenter(role);
     final canAudit = AppPermissions.canViewAuditLog(role);
+    final canMarketSettings = AppPermissions.canManageMarketSettings(role);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConfig.productNameKurdish),
         actions: [
+          if (canMarketSettings)
+            IconButton(
+              tooltip: 'ڕێکخستنەکانی مارکێت',
+              onPressed: _openMarketSettings,
+              icon: const Icon(Icons.settings_outlined),
+            ),
           if (canOwner)
             IconButton(
               tooltip: 'SaaS Owner Panel',
@@ -143,6 +156,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           if (canCreateDebt) FilledButton.icon(onPressed: _openAddDebt, icon: const Icon(Icons.add), label: const Text('قەرزی نوێ')),
                           if (canReceivePayment) FilledButton.icon(onPressed: _openReceivePayment, icon: const Icon(Icons.payments), label: const Text('پارەدانەوە')),
                           if (canViewCustomers) OutlinedButton.icon(onPressed: _openCustomers, icon: const Icon(Icons.people), label: const Text('کڕیارەکان')),
+                          if (canMarketSettings) OutlinedButton.icon(onPressed: _openMarketSettings, icon: const Icon(Icons.settings_outlined), label: const Text('ڕێکخستن')),
                           if (canApproval) OutlinedButton.icon(onPressed: _openApprovalCenter, icon: const Icon(Icons.verified_user), label: const Text('پەسندکردن')),
                           if (canAudit) OutlinedButton.icon(onPressed: _openAuditLog, icon: const Icon(Icons.history), label: const Text('مێژووی کردار')),
                         ],
