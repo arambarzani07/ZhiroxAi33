@@ -40,10 +40,13 @@ Branch: `implement-approved-plan`
 - GitHub Actions Flutter web check workflow
 - GitHub Actions manual workflow dispatch
 - Flutter doctor step added to CI
-- CI PocketBase URL fallback added
+- Flutter analyze passes in CI
+- Flutter web release build passes in CI
 - Compile and build check guide
 - Risk score progress type fixed for compile safety
 - Evidence quality progress type fixed for compile safety
+- Customer initial analyzer issue fixed
+- Flutter 3.44 CardThemeData compile issue fixed
 - Add debt screen wired to DebtService
 - Receive payment screen wired to PaymentService
 - Approval Center UI
@@ -58,13 +61,21 @@ Branch: `implement-approved-plan`
 - Flutter web `web/` files
 - Netlify build configuration
 
+## Current CI status
+
+```text
+flutter pub get: success
+flutter analyze: success
+flutter build web --release: success
+```
+
 ## Next modules
 
 ```text
-1. Run GitHub Actions manually and inspect logs
+1. PocketBase API rules setup
 2. PDF Kurdish font embedding
 3. Production QA pass
-4. PocketBase API rules setup
+4. Netlify production deployment check
 ```
 
 ## Test commands
