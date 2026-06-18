@@ -7,9 +7,9 @@ import '../../core/widgets/responsive_dashboard_grid.dart';
 import '../../core/widgets/zhirox_page_container.dart';
 import '../../providers/app_state_provider.dart';
 import '../../services/dashboard_service.dart';
-import '../approval/approval_center_screen.dart';
-import '../audit/audit_log_screen.dart';
-import '../customer/customer_list_screen.dart';
+import '../approval/guarded_approval_center_screen.dart';
+import '../audit/guarded_audit_log_screen.dart';
+import '../customer/guarded_customer_list_screen.dart';
 import '../debt/guarded_add_debt_screen.dart';
 import '../owner/owner_panel_screen.dart';
 import '../payment/guarded_receive_payment_screen.dart';
@@ -50,17 +50,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _openApprovalCenter() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ApprovalCenterScreen()));
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuardedApprovalCenterScreen()));
     if (mounted) setState(_reloadStats);
   }
 
   Future<void> _openAuditLog() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AuditLogScreen()));
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuardedAuditLogScreen()));
     if (mounted) setState(_reloadStats);
   }
 
   Future<void> _openCustomers() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerListScreen()));
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuardedCustomerListScreen()));
     if (mounted) setState(_reloadStats);
   }
 
