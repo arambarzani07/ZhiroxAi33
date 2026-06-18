@@ -1,0 +1,150 @@
+{
+  "project": "Zhirox AI Debt",
+  "version": 1,
+  "mode": "api_rules_baseline",
+  "notes": [
+    "Apply these rules manually in PocketBase Admin UI unless you convert them to an official PocketBase migration.",
+    "Frontend checks are not enough; these backend rules are required before production.",
+    "Authorized PocketBase superusers bypass API rules, so do not use superuser accounts inside the public Flutter app."
+  ],
+  "roles": {
+    "system_owner": "SaaS owner; may manage markets/licenses/support/plans/feature_flags only. Must not read private market financial data.",
+    "market_manager": "Full manager inside own market_id.",
+    "employee": "Operational user inside own market_id with limited create actions.",
+    "customer": "Customer portal user; may read only own customer records."
+  },
+  "ruleFragments": {
+    "authenticated": "@request.auth.id != ''",
+    "systemOwner": "@request.auth.system_role = 'system_owner'",
+    "marketManager": "@request.auth.system_role = 'market_manager'",
+    "employee": "@request.auth.system_role = 'employee'",
+    "customer": "@request.auth.system_role = 'customer'",
+    "sameMarketRecord": "market_id = @request.auth.market_id",
+    "sameMarketCreate": "@request.body.market_id = @request.auth.market_id",
+    "managerOrEmployee": "(@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+    "managerOnly": "@request.auth.system_role = 'market_manager'",
+    "customerOwnRecord": "customer_id = @request.auth.id",
+    "customerOwnCreate": "@request.body.customer_id = @request.auth.id"
+  },
+  "collections": {
+    "markets": {
+      "listRule": "@request.auth.system_role = 'system_owner' || (id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee'))",
+      "viewRule": "@request.auth.system_role = 'system_owner' || (id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee'))",
+      "createRule": "@request.auth.system_role = 'system_owner'",
+      "updateRule": "@request.auth.system_role = 'system_owner' || (id = @request.auth.market_id && @request.auth.system_role = 'market_manager')",
+      "deleteRule": null
+    },
+    "subscription_plans": {
+      "listRule": "@request.auth.system_role = 'system_owner' || active = true",
+      "viewRule": "@request.auth.system_role = 'system_owner' || active = true",
+      "createRule": "@request.auth.system_role = 'system_owner'",
+      "updateRule": "@request.auth.system_role = 'system_owner'",
+      "deleteRule": null
+    },
+    "licenses": {
+      "listRule": "@request.auth.system_role = 'system_owner' || (market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager')",
+      "viewRule": "@request.auth.system_role = 'system_owner' || (market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager')",
+      "createRule": "@request.auth.system_role = 'system_owner'",
+      "updateRule": "@request.auth.system_role = 'system_owner'",
+      "deleteRule": null
+    },
+    "support_tickets": {
+      "listRule": "@request.auth.system_role = 'system_owner' || market_id = @request.auth.market_id",
+      "viewRule": "@request.auth.system_role = 'system_owner' || market_id = @request.auth.market_id",
+      "createRule": "@request.auth.id != '' && (@request.body.market_id = @request.auth.market_id || @request.auth.system_role = 'system_owner')",
+      "updateRule": "@request.auth.system_role = 'system_owner' || (market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager')",
+      "deleteRule": null
+    },
+    "feature_flags": {
+      "listRule": "@request.auth.system_role = 'system_owner'",
+      "viewRule": "@request.auth.system_role = 'system_owner'",
+      "createRule": "@request.auth.system_role = 'system_owner'",
+      "updateRule": "@request.auth.system_role = 'system_owner'",
+      "deleteRule": null
+    },
+    "debts": {
+      "listRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "payments": {
+      "listRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "debt_ledger_entries": {
+      "listRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": null,
+      "deleteRule": null
+    },
+    "receipts": {
+      "listRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": null,
+      "deleteRule": null
+    },
+    "evidence_files": {
+      "listRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "viewRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "customer_scores": {
+      "listRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "smart_locks": {
+      "listRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "viewRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "lock_history": {
+      "listRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "viewRule": "market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": null,
+      "deleteRule": null
+    },
+    "approvals": {
+      "listRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "viewRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "audit_logs": {
+      "listRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "viewRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": null,
+      "deleteRule": null
+    },
+    "dispute_cases": {
+      "listRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "viewRule": "(market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "createRule": "(@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')) || (@request.body.customer_id = @request.auth.id && @request.auth.system_role = 'customer')",
+      "updateRule": "market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager'",
+      "deleteRule": null
+    },
+    "notifications": {
+      "listRule": "market_id = @request.auth.market_id || user_id = @request.auth.id",
+      "viewRule": "market_id = @request.auth.market_id || user_id = @request.auth.id",
+      "createRule": "@request.body.market_id = @request.auth.market_id && (@request.auth.system_role = 'market_manager' || @request.auth.system_role = 'employee')",
+      "updateRule": "user_id = @request.auth.id || (market_id = @request.auth.market_id && @request.auth.system_role = 'market_manager')",
+      "deleteRule": null
+    }
+  }
+}
