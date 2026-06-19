@@ -1,3 +1,4 @@
+import '../core/config/app_config.dart';
 import 'pb_client.dart';
 
 class CustomerOption {
@@ -43,7 +44,41 @@ class CustomerUpsertRequest {
 }
 
 class CustomerService {
+  static const List<CustomerOption> _preDatabaseCustomers = [
+    CustomerOption(
+      id: 'demo_customer_1',
+      name: 'کڕیاری دێمۆ ١',
+      currentBalance: 275000,
+      creditLimit: 500000,
+      overdueCount: 0,
+      phone: '07501234561',
+      portalEnabled: true,
+    ),
+    CustomerOption(
+      id: 'demo_customer_2',
+      name: 'کڕیاری دێمۆ ٢',
+      currentBalance: 600000,
+      creditLimit: 750000,
+      overdueCount: 2,
+      phone: '07501234562',
+      portalEnabled: true,
+    ),
+    CustomerOption(
+      id: 'pre_database_manager',
+      name: 'بەڕێوەبەری دێمۆ',
+      currentBalance: 0,
+      creditLimit: 0,
+      overdueCount: 0,
+      phone: '07500000000',
+      portalEnabled: true,
+    ),
+  ];
+
   Future<List<CustomerOption>> listCustomers({String? marketId}) async {
+    if (AppConfig.preDatabaseMode) {
+      return _preDatabaseCustomers.where((customer) => customer.id != AppConfig.preDatabaseUserId).toList();
+    }
+
     final filter = marketId == null || marketId.isEmpty
         ? 'role = "customer" || system_role = "customer"'
         : '(market_id = "$marketId") && (role = "customer" || system_role = "customer")';
@@ -57,17 +92,48 @@ class CustomerService {
   }
 
   Future<CustomerOption> getCustomer(String id) async {
+    if (AppConfig.preDatabaseMode) {
+      return _preDatabaseCustomers.firstWhere(
+        (customer) => customer.id == id,
+        orElse: () => _preDatabaseCustomers.first,
+      );
+    }
+
     final record = await PBClient.instance.collection('users').getOne(id);
     return _customerFromRecord(record);
   }
 
   Future<CustomerOption> createCustomer(CustomerUpsertRequest request) async {
+    if (AppConfig.preDatabaseMode) {
+      return CustomerOption(
+        id: 'demo_customer_${DateTime.now().millisecondsSinceEpoch}',
+        name: request.name.trim(),
+        currentBalance: request.currentBalance,
+        creditLimit: request.creditLimit,
+        overdueCount: 0,
+        phone: request.phone.trim(),
+        portalEnabled: request.portalEnabled,
+      );
+    }
+
     final body = _bodyFromRequest(request, isCreate: true);
     final record = await PBClient.instance.collection('users').create(body: body);
     return _customerFromRecord(record);
   }
 
   Future<CustomerOption> updateCustomer(String id, CustomerUpsertRequest request) async {
+    if (AppConfig.preDatabaseMode) {
+      return CustomerOption(
+        id: id,
+        name: request.name.trim(),
+        currentBalance: request.currentBalance,
+        creditLimit: request.creditLimit,
+        overdueCount: 0,
+        phone: request.phone.trim(),
+        portalEnabled: request.portalEnabled,
+      );
+    }
+
     final body = _bodyFromRequest(request, isCreate: false);
     final record = await PBClient.instance.collection('users').update(id, body: body);
     return _customerFromRecord(record);
