@@ -1,0 +1,255 @@
+# PocketBase Schema Baseline — Zhirox AI Debt
+
+This schema is additive. Do not delete existing collections or fields.
+
+## Required existing/core collections
+
+```text
+users
+debts
+payments
+notifications
+```
+
+## Required new collections
+
+```text
+markets
+audit_logs
+debt_ledger_entries
+approvals
+receipts
+customer_scores
+smart_locks
+lock_history
+evidence_files
+dispute_cases
+subscription_plans
+licenses
+support_tickets
+feature_flags
+```
+
+## users field additions
+
+```text
+market_id: relation -> markets
+system_role: select(system_owner, market_manager, employee, customer)
+permissions: json
+active: bool
+approved: bool
+customer_code: text
+portal_enabled: bool
+last_login_at: date
+```
+
+## markets
+
+```text
+name: text
+market_name: text optional
+owner_name: text
+owner_user_id: relation -> users
+status: select(active, trial, expired, suspended, disabled)
+created_at: date
+```
+
+## subscription_plans
+
+```text
+name: text
+price_iqd: number
+price_usd: number
+billing_cycle: select(monthly, quarterly, yearly, custom)
+features: json
+active: bool
+created_at: date
+```
+
+## licenses
+
+```text
+market_id: relation -> markets
+plan_id: relation -> subscription_plans
+plan_name: text
+status: select(active, trial, expired, suspended, cancelled)
+starts_at: date
+ends_at: date
+max_users: number
+max_customers: number
+created_at: date
+```
+
+## feature_flags
+
+```text
+key: text
+name: text
+description: text
+enabled: bool
+plan_required: text
+created_at: date
+```
+
+## support_tickets
+
+```text
+market_id: relation -> markets
+created_by: relation -> users
+title: text
+message: editor/file-safe text
+priority: select(low, normal, high, urgent)
+status: select(open, waiting, resolved, closed)
+created_at: date
+```
+
+## debts field additions
+
+```text
+market_id: relation -> markets
+debt_number: text
+receipt_id: relation -> receipts
+ledger_locked: bool
+requires_approval: bool
+approval_id: relation -> approvals
+risk_level_at_creation: text
+trust_score_at_creation: number
+debt_truth_score: number
+evidence_quality: number
+archived: bool
+archive_reason: text
+```
+
+## payments field additions
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+receipt_id: relation -> receipts
+ledger_entry_id: relation -> debt_ledger_entries
+payment_number: text
+previous_balance: number
+new_balance: number
+currency: text
+archived: bool
+```
+
+## receipts
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+debt_id: relation -> debts
+payment_id: relation -> payments
+receipt_type: select(debt, payment, correction, discount, forgiveness)
+receipt_number: text
+amount: number
+currency: text
+verification_code: text
+verification_url: text
+created_by: relation -> users
+created_at: date
+```
+
+## evidence_files
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+related_entity_type: select(customer, debt, payment, receipt, dispute)
+related_entity_id: text
+evidence_type: select(note, whatsapp, sms, document, photo)
+title: text
+note: editor/file-safe text
+file: file optional
+quality_score: number
+created_by: relation -> users
+created_at: date
+```
+
+## audit_logs
+
+```text
+market_id: relation -> markets
+actor_user_id: relation -> users
+action_type: text
+entity_type: text
+entity_id: text
+before_value: json
+after_value: json
+reason: text
+device_info: json
+created_at: date
+```
+
+## debt_ledger_entries
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+debt_id: relation -> debts
+payment_id: relation -> payments
+entry_type: select(debt_created, payment_received, correction, discount, forgiveness, opening_balance)
+amount: number
+previous_balance: number
+new_balance: number
+currency: text
+created_by: relation -> users
+audit_log_id: relation -> audit_logs
+receipt_id: relation -> receipts
+reason: text
+created_at: date
+```
+
+## approvals
+
+```text
+market_id: relation -> markets
+request_type: text
+entity_type: text
+entity_id: text
+requested_by: relation -> users
+customer_id: relation -> users
+amount: number
+reason: text
+status: select(pending, approved, rejected, cancelled)
+manager_note: text
+resolved_by: relation -> users
+resolved_at: date
+created_at: date
+```
+
+## smart_locks
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+active: bool
+risk_level: text
+reason: text
+locked_by: relation -> users
+lock_source: text
+created_at: date
+unlocked_by: relation -> users
+unlocked_at: date
+unlock_reason: text
+```
+
+## lock_history
+
+```text
+market_id: relation -> markets
+customer_id: relation -> users
+lock_id: relation -> smart_locks
+action: select(locked, unlock_requested, unlocked, rejected)
+reason: text
+actor_user_id: relation -> users
+created_at: date
+```
+
+## Access rule principle
+
+- System owner may manage markets/licenses/support/feature flags but must not read private debt/payment/customer records.
+- Market manager can read/write records for own `market_id`.
+- Employee can create allowed debt/payment records for own `market_id`.
+- Customer can read only own portal records.

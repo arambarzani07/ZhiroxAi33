@@ -1,0 +1,171 @@
+{
+  "project": "Zhirox AI Debt",
+  "version": 1,
+  "mode": "additive_schema_baseline",
+  "collections": [
+    {
+      "name": "markets",
+      "type": "base",
+      "fields": [
+        {"name": "name", "type": "text", "required": true},
+        {"name": "market_name", "type": "text", "required": false},
+        {"name": "owner_name", "type": "text", "required": false},
+        {"name": "owner_user_id", "type": "relation", "collection": "users", "required": false},
+        {"name": "status", "type": "select", "values": ["active", "trial", "expired", "suspended", "disabled"], "required": true},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "debt_ledger_entries",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "debt_id", "type": "relation", "collection": "debts", "required": false},
+        {"name": "payment_id", "type": "relation", "collection": "payments", "required": false},
+        {"name": "entry_type", "type": "select", "values": ["debt_created", "payment_received", "correction", "discount", "forgiveness", "opening_balance"], "required": true},
+        {"name": "amount", "type": "number", "required": true},
+        {"name": "previous_balance", "type": "number", "required": true},
+        {"name": "new_balance", "type": "number", "required": true},
+        {"name": "currency", "type": "text", "required": true},
+        {"name": "created_by", "type": "relation", "collection": "users", "required": true},
+        {"name": "audit_log_id", "type": "relation", "collection": "audit_logs", "required": false},
+        {"name": "receipt_id", "type": "relation", "collection": "receipts", "required": false},
+        {"name": "reason", "type": "text", "required": false},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "audit_logs",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": false},
+        {"name": "actor_user_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "action_type", "type": "text", "required": true},
+        {"name": "entity_type", "type": "text", "required": true},
+        {"name": "entity_id", "type": "text", "required": true},
+        {"name": "before_value", "type": "json", "required": false},
+        {"name": "after_value", "type": "json", "required": false},
+        {"name": "reason", "type": "text", "required": false},
+        {"name": "device_info", "type": "json", "required": false},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "approvals",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "request_type", "type": "text", "required": true},
+        {"name": "entity_type", "type": "text", "required": true},
+        {"name": "entity_id", "type": "text", "required": false},
+        {"name": "requested_by", "type": "relation", "collection": "users", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": false},
+        {"name": "amount", "type": "number", "required": false},
+        {"name": "reason", "type": "text", "required": false},
+        {"name": "status", "type": "select", "values": ["pending", "approved", "rejected", "cancelled"], "required": true},
+        {"name": "manager_note", "type": "text", "required": false},
+        {"name": "resolved_by", "type": "relation", "collection": "users", "required": false},
+        {"name": "resolved_at", "type": "date", "required": false},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "receipts",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "debt_id", "type": "relation", "collection": "debts", "required": false},
+        {"name": "payment_id", "type": "relation", "collection": "payments", "required": false},
+        {"name": "receipt_type", "type": "select", "values": ["debt", "payment", "correction", "discount", "forgiveness"], "required": true},
+        {"name": "receipt_number", "type": "text", "required": true},
+        {"name": "amount", "type": "number", "required": true},
+        {"name": "currency", "type": "text", "required": true},
+        {"name": "verification_code", "type": "text", "required": true},
+        {"name": "verification_url", "type": "text", "required": false},
+        {"name": "created_by", "type": "relation", "collection": "users", "required": true},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "customer_scores",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "trust_score", "type": "number", "required": true},
+        {"name": "risk_level", "type": "text", "required": true},
+        {"name": "debt_truth_score", "type": "number", "required": false},
+        {"name": "evidence_quality", "type": "number", "required": false},
+        {"name": "promise_reputation", "type": "number", "required": false},
+        {"name": "credit_limit_status", "type": "text", "required": false},
+        {"name": "risk_reason", "type": "text", "required": false},
+        {"name": "system_recommendation", "type": "text", "required": false},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "smart_locks",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "active", "type": "bool", "required": true},
+        {"name": "risk_level", "type": "text", "required": false},
+        {"name": "reason", "type": "text", "required": false},
+        {"name": "locked_by", "type": "relation", "collection": "users", "required": false},
+        {"name": "lock_source", "type": "text", "required": false},
+        {"name": "created_at", "type": "date", "required": false},
+        {"name": "unlocked_by", "type": "relation", "collection": "users", "required": false},
+        {"name": "unlocked_at", "type": "date", "required": false},
+        {"name": "unlock_reason", "type": "text", "required": false}
+      ]
+    },
+    {
+      "name": "lock_history",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "lock_id", "type": "relation", "collection": "smart_locks", "required": false},
+        {"name": "action", "type": "select", "values": ["locked", "unlock_requested", "unlocked", "rejected"], "required": true},
+        {"name": "reason", "type": "text", "required": false},
+        {"name": "actor_user_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "evidence_files",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "customer_id", "type": "relation", "collection": "users", "required": true},
+        {"name": "related_entity_type", "type": "select", "values": ["customer", "debt", "payment", "receipt", "dispute"], "required": true},
+        {"name": "related_entity_id", "type": "text", "required": true},
+        {"name": "evidence_type", "type": "select", "values": ["note", "whatsapp", "sms", "document", "photo"], "required": true},
+        {"name": "title", "type": "text", "required": true},
+        {"name": "note", "type": "editor", "required": false},
+        {"name": "file", "type": "file", "required": false},
+        {"name": "quality_score", "type": "number", "required": false},
+        {"name": "created_by", "type": "relation", "collection": "users", "required": true},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "licenses",
+      "type": "base",
+      "fields": [
+        {"name": "market_id", "type": "relation", "collection": "markets", "required": true},
+        {"name": "plan_id", "type": "relation", "collection": "subscription_plans", "required": false},
+        {"name": "plan_name", "type": "text", "required": false},
+        {"name": "status", "type": "select", "values": ["active", "trial", "expired", "suspended", "cancelled"], "required": true},
+        {"name": "starts_at", "type": "date", "required": false},
+        {"name": "ends_at", "type": "date", "required": false},
+        {"name": "max_users", "type": "number", "required": false},
+        {"name": "max_customers", "type": "number", "required": false},
+        {"name": "created_at", "type": "date", "required": false}
+      ]
+    }
+  ]
+}

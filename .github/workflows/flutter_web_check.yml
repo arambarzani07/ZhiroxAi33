@@ -1,0 +1,64 @@
+name: Flutter Web Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [implement-approved-plan, main]
+  workflow_dispatch:
+
+jobs:
+  analyze-and-build-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Doctor
+        run: flutter doctor -v
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        continue-on-error: true
+        run: |
+          set +e
+          flutter analyze --no-fatal-warnings --no-fatal-infos > analyze.log 2>&1
+          echo $? > analyze.exit
+          cat analyze.log
+
+      - name: Build web
+        continue-on-error: true
+        run: |
+          set +e
+          flutter build web --release > build.log 2>&1
+          echo $? > build.exit
+          cat build.log
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-check-logs
+          path: |
+            analyze.log
+            analyze.exit
+            build.log
+            build.exit
+
+      - name: Fail if analyze failed
+        run: test "$(cat analyze.exit)" = "0"
+
+      - name: Fail if build failed
+        run: test "$(cat build.exit)" = "0"
