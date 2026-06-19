@@ -10,8 +10,15 @@ Branch: `implement-approved-plan`
 - PocketBase client
 - Auth service using `users` collection
 - App state provider
-- Dashboard using real PocketBase data
-- Login screen
+- Pre-Database Mode login bypass
+- Pre-Database Mode demo manager session
+- Pre-Database Mode dashboard demo stats
+- Pre-Database Mode customer demo list
+- Pre-Database Mode market settings fallback
+- Dashboard Pre-Database Mode banner
+- Dashboard hides logout while login is bypassed
+- Dashboard using real PocketBase data when production mode is enabled
+- Login screen retained for production mode
 - Customer lookup/list/profile
 - Customer create/edit frontend screen
 - Customer create/edit service methods
@@ -87,6 +94,19 @@ flutter analyze: success
 flutter build web --release: success
 ```
 
+## Pre-Database Mode status
+
+```text
+login bypass: enabled by default
+role: market_manager
+user_id: pre_database_manager
+market_id: pre_database_market
+demo dashboard stats: enabled
+demo customers: enabled
+market settings fallback: enabled
+production login can be restored with --dart-define=PRE_DATABASE_MODE=false
+```
+
 ## PocketBase backend status
 
 ```text
@@ -108,6 +128,7 @@ Receipt PDF Kurdish RTL foundation: implemented
 Customer create/edit frontend: implemented
 Market settings/profile frontend: implemented
 Customer portal read-only frontend: implemented
+Pre-Database Mode frontend preview: implemented
 ```
 
 ## PDF receipt status
