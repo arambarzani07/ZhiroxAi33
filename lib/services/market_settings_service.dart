@@ -1,3 +1,4 @@
+import '../core/config/app_config.dart';
 import 'pb_client.dart';
 
 class MarketProfile {
@@ -34,11 +35,31 @@ class MarketSettingsRequest {
 
 class MarketSettingsService {
   Future<MarketProfile> getMarket(String marketId) async {
+    if (AppConfig.preDatabaseMode) {
+      return const MarketProfile(
+        id: AppConfig.preDatabaseMarketId,
+        name: 'Demo Market',
+        marketName: 'بازاڕی دێمۆ',
+        ownerName: 'Aram',
+        status: 'active',
+      );
+    }
+
     final record = await PBClient.instance.collection('markets').getOne(marketId);
     return _fromRecord(record);
   }
 
   Future<MarketProfile> updateMarket(String marketId, MarketSettingsRequest request) async {
+    if (AppConfig.preDatabaseMode) {
+      return MarketProfile(
+        id: AppConfig.preDatabaseMarketId,
+        name: request.name.trim(),
+        marketName: request.marketName.trim(),
+        ownerName: request.ownerName.trim(),
+        status: request.status,
+      );
+    }
+
     final record = await PBClient.instance.collection('markets').update(
       marketId,
       body: {
