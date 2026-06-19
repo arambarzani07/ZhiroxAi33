@@ -117,11 +117,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onPressed: _openOwnerPanel,
               icon: const Icon(Icons.admin_panel_settings),
             ),
-          IconButton(
-            tooltip: 'چوونەدەرەوە',
-            onPressed: () => appState.logout(),
-            icon: const Icon(Icons.logout),
-          ),
+          if (!AppConfig.preDatabaseMode)
+            IconButton(
+              tooltip: 'چوونەدەرەوە',
+              onPressed: () => appState.logout(),
+              icon: const Icon(Icons.logout),
+            ),
         ],
       ),
       floatingActionButton: canCreateDebt
@@ -141,6 +142,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (AppConfig.preDatabaseMode) ...[
+                    const _PreDatabaseBanner(),
+                    const SizedBox(height: 16),
+                  ],
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -165,7 +170,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ? 'بۆ بەڕێوەبردنی SaaS بچۆ Owner Panel.'
                                 : canCustomerPortal
                                     ? 'Balance، ledger و وەسڵەکانی خۆت ببینە.'
-                                    : 'هەموو ژمارەکان لە PocketBase دەخوێندرێنەوە.'),
+                                    : AppConfig.preDatabaseMode
+                                        ? 'لاگین بە کاتی لابراوە؛ تایبەتمەندییەکان بە داتای دێمۆ پێشبینین دەکرێن.'
+                                        : 'هەموو ژمارەکان لە PocketBase دەخوێندرێنەوە.'),
                           ],
                         ),
                       ),
@@ -204,6 +211,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _PreDatabaseBanner extends StatelessWidget {
+  const _PreDatabaseBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Icon(Icons.info_outline),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Pre‑Database Mode چالاکە: پەڕەی چوونەژوورەوە بە کاتی لابراوە تا پێش تەواوکردنی PocketBase، تایبەتمەندییەکان و UI پێشبینین و تەواو بکرێن.',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
