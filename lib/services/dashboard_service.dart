@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import '../core/config/app_config.dart';
 import 'pb_client.dart';
 
 class DashboardStats {
@@ -22,6 +23,13 @@ class DashboardStats {
         totalCustomers: 0,
       );
 
+  factory DashboardStats.preDatabaseDemo() => const DashboardStats(
+        totalDebt: 1250000,
+        remainingDebt: 875000,
+        totalPayments: 375000,
+        totalCustomers: 8,
+      );
+
   String get totalDebtText => _money(totalDebt);
   String get remainingDebtText => _money(remainingDebt);
   String get totalPaymentsText => _money(totalPayments);
@@ -34,6 +42,10 @@ class DashboardStats {
 
 class DashboardService {
   Future<DashboardStats> loadStats({String? marketId}) async {
+    if (AppConfig.preDatabaseMode) {
+      return DashboardStats.preDatabaseDemo();
+    }
+
     final marketFilter = marketId == null || marketId.isEmpty ? '' : 'market_id = "$marketId"';
 
     final debts = await PBClient.instance.collection('debts').getFullList(
